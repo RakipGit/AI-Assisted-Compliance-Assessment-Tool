@@ -1,5 +1,8 @@
 .venv/
 __pycache__/
-*.pyc
-reports/*.html
+*.py[cod]
+.pytest_cache/
 .env
+reports/*.html
+.vscode/
+.DS_Store

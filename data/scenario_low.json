@@ -1,0 +1,42 @@
+{
+  "organization": {
+    "name": "Aegean Micro Services",
+    "size": "micro",
+    "employees": 8,
+    "sector": "Professional services",
+    "description": "Synthetic micro-enterprise scenario representing a low level of cybersecurity maturity."
+  },
+  "security_controls": {
+    "mfa": {
+      "implemented": false,
+      "privileged_accounts_covered": false,
+      "remote_access_covered": false,
+      "evidence_available": false
+    },
+    "backup": {
+      "backups_enabled": false,
+      "backup_frequency": "irregular",
+      "offsite_or_separate_storage": false,
+      "restore_tests_performed": false,
+      "last_restore_test_date": null,
+      "evidence_available": false
+    },
+    "patch_management": {
+      "patch_process_defined": false,
+      "vulnerability_scanning_enabled": false,
+      "critical_patch_deadline_days": 120,
+      "unsupported_software_present": true,
+      "patch_status_reviewed": false,
+      "evidence_available": false
+    },
+    "incident_response": {
+      "plan_exists": false,
+      "roles_defined": false,
+      "communication_procedure_defined": false,
+      "reporting_procedure_defined": false,
+      "plan_tested": false,
+      "last_test_date": null,
+      "evidence_available": false
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "organization": {
+    "name": "Hellenic Managed Systems",
+    "size": "medium",
+    "employees": 120,
+    "sector": "Managed technology services",
+    "description": "Synthetic medium-sized enterprise scenario representing an improved level of cybersecurity maturity."
+  },
+  "security_controls": {
+    "mfa": {
+      "implemented": true,
+      "privileged_accounts_covered": true,
+      "remote_access_covered": true,
+      "evidence_available": true
+    },
+    "backup": {
+      "backups_enabled": true,
+      "backup_frequency": "daily",
+      "offsite_or_separate_storage": true,
+      "restore_tests_performed": true,
+      "last_restore_test_date": "2026-06-15",
+      "evidence_available": true
+    },
+    "patch_management": {
+      "patch_process_defined": true,
+      "vulnerability_scanning_enabled": true,
+      "critical_patch_deadline_days": 14,
+      "unsupported_software_present": false,
+      "patch_status_reviewed": true,
+      "evidence_available": true
+    },
+    "incident_response": {
+      "plan_exists": true,
+      "roles_defined": true,
+      "communication_procedure_defined": true,
+      "reporting_procedure_defined": true,
+      "plan_tested": true,
+      "last_test_date": "2026-05-20",
+      "evidence_available": true
+    }
+  }
+}

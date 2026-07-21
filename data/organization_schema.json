@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.org/schemas/organization_schema.json",
+  "title": "Organization Security Assessment Input",
+  "description": "Schema for validating organization data used by the AI-assisted compliance assessment tool.",
+  "$comment": "Individual security-control fields are intentionally not required. Missing evaluation data is handled by the deterministic rule engine through the 'Not Assessable' status rather than being treated as a schema-validation failure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organization",
+    "security_controls"
+  ],
+  "properties": {
+    "organization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "size",
+        "employees",
+        "sector"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "size": {
+          "type": "string",
+          "enum": [
+            "micro",
+            "small",
+            "medium"
+          ]
+        },
+        "employees": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 249
+        },
+        "sector": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "size"
+            ],
+            "properties": {
+              "size": {
+                "const": "micro"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "employees": {
+                "minimum": 1,
+                "maximum": 9
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "size"
+            ],
+            "properties": {
+              "size": {
+                "const": "small"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "employees": {
+                "minimum": 10,
+                "maximum": 49
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "size"
+            ],
+            "properties": {
+              "size": {
+                "const": "medium"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "employees": {
+                "minimum": 50,
+                "maximum": 249
+              }
+            }
+          }
+        }
+      ]
+    },
+    "security_controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mfa",
+        "backup",
+        "patch_management",
+        "incident_response"
+      ],
+      "properties": {
+        "mfa": {
+          "$ref": "#/definitions/mfaControl"
+        },
+        "backup": {
+          "$ref": "#/definitions/backupControl"
+        },
+        "patch_management": {
+          "$ref": "#/definitions/patchManagementControl"
+        },
+        "incident_response": {
+          "$ref": "#/definitions/incidentResponseControl"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "mfaControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "implemented": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "privileged_accounts_covered": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "remote_access_covered": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "evidence_available": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "backupControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backups_enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "backup_frequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "continuous",
+            "hourly",
+            "daily",
+            "weekly",
+            "monthly",
+            "irregular",
+            null
+          ]
+        },
+        "offsite_or_separate_storage": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "restore_tests_performed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "last_restore_test_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "evidence_available": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "patchManagementControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "patch_process_defined": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "vulnerability_scanning_enabled": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "critical_patch_deadline_days": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 365
+        },
+        "unsupported_software_present": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "patch_status_reviewed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "evidence_available": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "incidentResponseControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan_exists": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "roles_defined": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "communication_procedure_defined": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "reporting_procedure_defined": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "plan_tested": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "last_test_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "evidence_available": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

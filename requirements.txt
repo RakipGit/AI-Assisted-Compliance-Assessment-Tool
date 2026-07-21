@@ -1,0 +1,6 @@
+streamlit>=1.58,<2.0
+jsonschema>=4.26,<5.0
+pandas>=3.0,<4.0
+Jinja2>=3.1,<4.0
+pytest>=9.1,<10.0
+python-dotenv>=1.0,<2.0

@@ -1,24 +1,24 @@
 {
   "organization": {
-    "name": "Northern Digital Solutions",
+    "name": "Mediterranean Business Solutions",
     "size": "small",
-    "employees": 35,
-    "sector": "Information technology services",
-    "description": "Synthetic small-enterprise scenario representing partial implementation of selected cybersecurity controls."
+    "employees": 28,
+    "sector": "Business and technology services",
+    "description": "Synthetic small-enterprise scenario representing a realistic mixed cybersecurity maturity profile."
   },
   "security_controls": {
     "mfa": {
       "implemented": true,
       "privileged_accounts_covered": true,
-      "remote_access_covered": false,
+      "remote_access_covered": true,
       "evidence_available": true
     },
     "backup": {
       "backups_enabled": true,
       "backup_frequency": "daily",
       "offsite_or_separate_storage": true,
-      "restore_tests_performed": false,
-      "last_restore_test_date": null,
+      "restore_tests_performed": true,
+      "last_restore_test_date": "2026-06-10",
       "evidence_available": true
     },
     "patch_management": {
@@ -30,13 +30,13 @@
       "evidence_available": true
     },
     "incident_response": {
-      "plan_exists": true,
-      "roles_defined": true,
-      "communication_procedure_defined": true,
+      "plan_exists": false,
+      "roles_defined": false,
+      "communication_procedure_defined": false,
       "reporting_procedure_defined": false,
       "plan_tested": false,
       "last_test_date": null,
-      "evidence_available": true
+      "evidence_available": false
     }
   }
 }

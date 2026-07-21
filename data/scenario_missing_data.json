@@ -1,0 +1,40 @@
+{
+  "organization": {
+    "name": "Incomplete Assessment Example",
+    "size": "small",
+    "employees": 20,
+    "sector": "Retail",
+    "description": "Synthetic validation case containing both assessable controls and intentionally incomplete control information."
+  },
+  "security_controls": {
+    "mfa": {
+      "implemented": null,
+      "evidence_available": false
+    },
+    "backup": {
+      "backups_enabled": true,
+      "backup_frequency": "daily",
+      "offsite_or_separate_storage": true,
+      "restore_tests_performed": false,
+      "last_restore_test_date": null,
+      "evidence_available": false
+    },
+    "patch_management": {
+      "patch_process_defined": null,
+      "vulnerability_scanning_enabled": null,
+      "critical_patch_deadline_days": null,
+      "unsupported_software_present": null,
+      "patch_status_reviewed": null,
+      "evidence_available": false
+    },
+    "incident_response": {
+      "plan_exists": true,
+      "roles_defined": true,
+      "communication_procedure_defined": false,
+      "reporting_procedure_defined": false,
+      "plan_tested": false,
+      "last_test_date": null,
+      "evidence_available": false
+    }
+  }
+}

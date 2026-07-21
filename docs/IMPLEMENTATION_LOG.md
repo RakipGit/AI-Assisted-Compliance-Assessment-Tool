@@ -121,3 +121,117 @@ score.
 - The AI-assisted layer can consume results without changing their status.
 - The scoring and reporting components receive a consistent data structure.
 - Primary and supporting framework mappings remain distinguishable.
+
+
+## Decision — Deterministic security-control rule engine
+
+### Decision
+
+The four selected security controls are evaluated through explicit,
+deterministic Python functions:
+
+- `evaluate_mfa`
+- `evaluate_backup`
+- `evaluate_patch_management`
+- `evaluate_incident_response`
+
+The rule engine does not use an LLM, probabilistic model or external AI
+service to assign assessment statuses.
+
+### Status logic
+
+The engine distinguishes explicitly between:
+
+- `True`: a positively declared condition
+- `False`: a negatively declared condition
+- `None` or an absent key: unavailable assessment information
+
+Missing critical information results in `Not Assessable` rather than being
+treated as `Not Satisfied`.
+
+### Evidence handling
+
+The `evidence_available` field produces an evidence observation but does not
+automatically determine the control status. The prototype therefore remains
+a preliminary self-assessment tool based on user-provided information rather
+than an audit-verification system.
+
+### Researcher-defined rules
+
+The control rules and thresholds are transparent design decisions adopted
+for the proof-of-concept.
+
+In particular, the 30-day critical-patch deadline is a prototype threshold
+and must not be interpreted as an official ISO/IEC 27001 or NIS2 requirement.
+
+### Catalogue integration
+
+Control names, categories, assessment scopes and framework mappings are
+loaded from `control_catalogue.json`. The rule engine contains only
+evaluation logic and does not duplicate framework metadata.
+
+### Consequences
+
+- Identical input produces identical assessment results.
+- The assigned status is reproducible and independently testable.
+- Missing data is not silently interpreted as control failure.
+- AI-generated explanations cannot determine or modify the underlying
+  assessment status.
+- Framework mappings can be maintained independently from rule logic.
+
+## Decision — Prototype selected-controls coverage score
+
+### Decision
+
+The scoring component converts deterministic control statuses into the
+following internal values:
+
+- `Satisfied`: 1.0
+- `Partially Satisfied`: 0.5
+- `Not Satisfied`: 0.0
+- `Not Assessable`: excluded from the calculation
+
+The selected-controls coverage percentage is calculated as:
+
+`earned score / maximum score of assessable controls × 100`
+
+### Rationale
+
+The scoring method provides a simple, transparent and reproducible summary
+of the four selected control assessments.
+
+A `Not Assessable` result is excluded from the denominator because it
+represents insufficient information rather than confirmed control failure.
+
+When no selected control is assessable, the scoring component returns no
+percentage instead of reporting zero coverage.
+
+### Interpretation limitation
+
+The resulting percentage is a researcher-defined internal indicator for the
+selected controls of the proof-of-concept.
+
+It must not be interpreted as:
+
+- an official ISO/IEC 27001 compliance score,
+- a NIS2 compliance percentage,
+- certification readiness,
+- audit assurance,
+- or a legal compliance determination.
+
+### Error handling
+
+The scoring component rejects:
+
+- empty result collections,
+- non-`ControlResult` inputs,
+- duplicate control identifiers.
+
+### Consequences
+
+- Missing information does not artificially reduce the score.
+- The denominator remains visible through the assessable-control count.
+- A completely unavailable assessment is distinguished from a confirmed
+  zero-coverage result.
+- The same deterministic results always produce the same coverage summary.
+

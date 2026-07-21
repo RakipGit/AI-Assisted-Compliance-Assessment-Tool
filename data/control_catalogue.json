@@ -1,0 +1,115 @@
+{
+  "catalogue_version": "1.0.0",
+  "title": "Selected Security Control Catalogue",
+  "description": "Metadata and framework mappings for the four security-control areas assessed by the proof-of-concept tool.",
+  "$comment": "The mappings represent the documented interpretation adopted by this proof-of-concept. They do not constitute an official ISO/IEC–NIS2 crosswalk.",
+  "scope": {
+    "selected_controls": 4,
+    "frameworks": [
+      "ISO/IEC 27001:2022",
+      "Directive (EU) 2022/2555 (NIS2)"
+    ],
+    "limitations": [
+      "The catalogue covers only four selected security-control areas.",
+      "It does not represent complete coverage of ISO/IEC 27001:2022 or Directive (EU) 2022/2555.",
+      "The mappings support a preliminary assessment and must not be interpreted as certification, audit assurance, a legal compliance determination or legal advice.",
+      "The NIS2 titles stored in this catalogue are concise descriptive labels used by the project and are not official standalone titles assigned to the individual points of Article 21(2)."
+    ]
+  },
+  "controls": {
+    "mfa": {
+      "control_id": "mfa",
+      "control_name": "Multi-Factor Authentication",
+      "category": "Identity and access management",
+      "description": "Assessment of whether multi-factor authentication is implemented for privileged accounts and remote access.",
+      "assessment_scope": "The assessment focuses on the multi-factor authentication component of NIS2 Article 21(2)(j), rather than all secure-communication measures included in that point.",
+      "input_object": "security_controls.mfa",
+      "framework_mappings": [
+        {
+          "framework": "ISO/IEC 27001:2022",
+          "reference": "A.8.5",
+          "title": "Secure authentication",
+          "role": "primary"
+        },
+        {
+          "framework": "NIS2",
+          "reference": "Article 21(2)(j)",
+          "title": "Multi-factor or continuous authentication and secure communications",
+          "role": "primary"
+        }
+      ]
+    },
+    "backup": {
+      "control_id": "backup",
+      "control_name": "Backup and Restore Testing",
+      "category": "Business continuity and resilience",
+      "description": "Assessment of whether information backups are enabled, stored separately where appropriate and supported by restoration testing.",
+      "assessment_scope": "The assessment focuses on backup management and restoration testing within NIS2 Article 21(2)(c), rather than the complete areas of business continuity, disaster recovery and crisis management.",
+      "input_object": "security_controls.backup",
+      "framework_mappings": [
+        {
+          "framework": "ISO/IEC 27001:2022",
+          "reference": "A.8.13",
+          "title": "Information backup",
+          "role": "primary"
+        },
+        {
+          "framework": "NIS2",
+          "reference": "Article 21(2)(c)",
+          "title": "Business continuity, backup management, disaster recovery and crisis management",
+          "role": "primary"
+        }
+      ]
+    },
+    "patch_management": {
+      "control_id": "patch_management",
+      "control_name": "Patch and Vulnerability Management",
+      "category": "Technical vulnerability management",
+      "description": "Assessment of whether the organization defines a patch-management process, identifies technical vulnerabilities, reviews patch status and manages unsupported software.",
+      "assessment_scope": "The assessment focuses on vulnerability handling, patch management and unsupported software within NIS2 Article 21(2)(e). It does not assess the complete system acquisition, development and maintenance lifecycle.",
+      "input_object": "security_controls.patch_management",
+      "framework_mappings": [
+        {
+          "framework": "ISO/IEC 27001:2022",
+          "reference": "A.8.8",
+          "title": "Management of technical vulnerabilities",
+          "role": "primary"
+        },
+        {
+          "framework": "NIS2",
+          "reference": "Article 21(2)(e)",
+          "title": "Security in network and information systems acquisition, development and maintenance, including vulnerability handling and disclosure",
+          "role": "primary"
+        }
+      ]
+    },
+    "incident_response": {
+      "control_id": "incident_response",
+      "control_name": "Incident Response Planning and Preparedness",
+      "category": "Information security incident management",
+      "description": "Assessment of whether an incident-response plan exists, defines responsibilities, includes communication and reporting procedures and is periodically tested.",
+      "assessment_scope": "The assessment focuses on incident-response planning, assigned roles, communication, reporting and testing within NIS2 Article 21(2)(b). It does not assess the complete operational incident-management lifecycle.",
+      "input_object": "security_controls.incident_response",
+      "framework_mappings": [
+        {
+          "framework": "ISO/IEC 27001:2022",
+          "reference": "A.5.24",
+          "title": "Information security incident management planning and preparation",
+          "role": "primary"
+        },
+        {
+          "framework": "ISO/IEC 27001:2022",
+          "reference": "A.5.26",
+          "title": "Response to information security incidents",
+          "role": "supporting"
+        },
+        {
+          "framework": "NIS2",
+          "reference": "Article 21(2)(b)",
+          "title": "Incident handling",
+          "role": "primary"
+        }
+      ]
+    }
+  }
+}

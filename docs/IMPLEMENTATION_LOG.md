@@ -68,3 +68,56 @@ Examples of reported paths include:
   `jsonschema.FormatChecker`.
 - The validation process is deterministic and independently testable.
 
+
+## Decision — Immutable internal assessment models
+
+### Decision
+
+The internal assessment output is represented through three explicit
+Python data models:
+
+- `ControlStatus`
+- `FrameworkMapping`
+- `ControlResult`
+
+The two result-related models are implemented as frozen dataclasses.
+
+### Rationale
+
+Explicit internal models provide a stable contract between the
+deterministic rule engine, the scoring component, the AI-assisted
+explanation layer and the report generator.
+
+Framework mappings are stored as structured objects rather than flattened
+strings so that framework name, reference, title and mapping role can be
+processed independently.
+
+### Immutability approach
+
+Result collections such as recommendations, evidence observations and
+framework mappings are stored as tuples. This reduces the risk of
+accidental modification after deterministic evaluation.
+
+The frozen dataclass mechanism provides shallow immutability. It does not
+guarantee deep immutability for arbitrary nested Python objects; therefore,
+mutable collections are not used in the core result fields.
+
+### Scoring representation
+
+Each assessable status exposes an internal prototype score:
+
+- `Satisfied`: 1.0
+- `Partially Satisfied`: 0.5
+- `Not Satisfied`: 0.0
+- `Not Assessable`: excluded from scoring through a `None` value
+
+These values form a researcher-defined coverage indicator for the selected
+controls and do not represent an official ISO/IEC 27001 or NIS2 compliance
+score.
+
+### Consequences
+
+- The deterministic result cannot be reassigned after creation.
+- The AI-assisted layer can consume results without changing their status.
+- The scoring and reporting components receive a consistent data structure.
+- Primary and supporting framework mappings remain distinguishable.

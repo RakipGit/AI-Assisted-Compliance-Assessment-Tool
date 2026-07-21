@@ -1,0 +1,71 @@
+{
+  "description": "A priori expected deterministic results for the five synthetic organization scenarios.",
+  "$comment": "These expected values are used for automated verification of the rule engine and scoring component. The coverage percentages are internal proof-of-concept indicators and not official ISO/IEC 27001 or NIS2 compliance scores.",
+  "scenarios": {
+    "scenario_low.json": {
+      "control_statuses": {
+        "mfa": "Not Satisfied",
+        "backup": "Not Satisfied",
+        "patch_management": "Not Satisfied",
+        "incident_response": "Not Satisfied"
+      },
+      "coverage_percentage": 0.0,
+      "earned_score": 0.0,
+      "maximum_score": 4.0,
+      "assessable_controls": 4,
+      "not_assessable_controls": 0
+    },
+    "scenario_partial.json": {
+      "control_statuses": {
+        "mfa": "Partially Satisfied",
+        "backup": "Partially Satisfied",
+        "patch_management": "Partially Satisfied",
+        "incident_response": "Partially Satisfied"
+      },
+      "coverage_percentage": 50.0,
+      "earned_score": 2.0,
+      "maximum_score": 4.0,
+      "assessable_controls": 4,
+      "not_assessable_controls": 0
+    },
+    "scenario_improved.json": {
+      "control_statuses": {
+        "mfa": "Satisfied",
+        "backup": "Satisfied",
+        "patch_management": "Satisfied",
+        "incident_response": "Satisfied"
+      },
+      "coverage_percentage": 100.0,
+      "earned_score": 4.0,
+      "maximum_score": 4.0,
+      "assessable_controls": 4,
+      "not_assessable_controls": 0
+    },
+    "scenario_missing_data.json": {
+      "control_statuses": {
+        "mfa": "Not Assessable",
+        "backup": "Partially Satisfied",
+        "patch_management": "Not Assessable",
+        "incident_response": "Partially Satisfied"
+      },
+      "coverage_percentage": 50.0,
+      "earned_score": 1.0,
+      "maximum_score": 2.0,
+      "assessable_controls": 2,
+      "not_assessable_controls": 2
+    },
+    "scenario_mixed.json": {
+      "control_statuses": {
+        "mfa": "Satisfied",
+        "backup": "Satisfied",
+        "patch_management": "Partially Satisfied",
+        "incident_response": "Not Satisfied"
+      },
+      "coverage_percentage": 62.5,
+      "earned_score": 2.5,
+      "maximum_score": 4.0,
+      "assessable_controls": 4,
+      "not_assessable_controls": 0
+    }
+  }
+}

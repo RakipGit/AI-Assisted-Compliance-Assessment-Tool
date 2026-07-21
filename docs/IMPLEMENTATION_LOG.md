@@ -235,3 +235,73 @@ The scoring component rejects:
   zero-coverage result.
 - The same deterministic results always produce the same coverage summary.
 
+## Decision — Template-based HTML assessment reporting
+
+### Decision
+
+Completed assessment results are rendered into a standalone HTML report
+through Jinja2 and `report_template.html`.
+
+The report contains:
+
+- organization metadata,
+- selected-controls coverage,
+- assessable and Not Assessable counts,
+- deterministic status results,
+- deterministic rationales,
+- recommendations,
+- evidence observations,
+- ISO/IEC 27001 and NIS2 mappings,
+- explanatory summary,
+- methodology and scope limitations.
+
+### Separation of responsibilities
+
+The report generator does not evaluate controls or calculate scores.
+
+It receives completed `ControlResult`, `ScoreSummary` and `AISummary`
+objects and presents their existing values.
+
+The deterministic rule engine and scoring component therefore remain the
+authoritative sources of assessment decisions.
+
+### Output format
+
+HTML was selected because it:
+
+- can be generated without platform-specific software,
+- supports structured presentation and printable styling,
+- can be opened in a standard browser,
+- can be downloaded directly from Streamlit,
+- remains human-readable and portable.
+
+PDF export may be considered as a future extension but is not required for
+the core proof-of-concept.
+
+### Security and integrity
+
+Jinja2 autoescaping is enabled for HTML and XML output.
+
+User-provided organization data and generated text are therefore escaped
+before being inserted into the report template.
+
+Automated tests verify that:
+
+- deterministic results remain unchanged,
+- unsafe HTML is escaped,
+- output files are written correctly,
+- duplicate controls are rejected,
+- filenames are sanitized.
+
+### Interpretation limitation
+
+The report presents a preliminary assessment of four selected
+cybersecurity-control areas.
+
+It must not be interpreted as:
+
+- ISO/IEC 27001 certification,
+- an official NIS2 compliance assessment,
+- audit assurance,
+- legal advice,
+- or a complete evaluation of the organization's cybersecurity posture.

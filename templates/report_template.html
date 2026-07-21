@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ report_title }} — {{ organization.name }}
+    </title>
+
+    <style>
+        :root {
+            --background: #f4f6f8;
+            --surface: #ffffff;
+            --surface-muted: #f8fafc;
+            --text: #17202a;
+            --text-muted: #5f6b76;
+            --border: #dfe5eb;
+            --primary: #1f4e79;
+            --primary-light: #eaf2f8;
+
+            --satisfied-background: #e8f5e9;
+            --satisfied-text: #1b5e20;
+
+            --partial-background: #fff4d6;
+            --partial-text: #7a5200;
+
+            --not-satisfied-background: #fdecea;
+            --not-satisfied-text: #9f1d1d;
+
+            --not-assessable-background: #eceff1;
+            --not-assessable-text: #455a64;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+            line-height: 1.55;
+        }
+
+        .report-container {
+            width: min(1120px, calc(100% - 32px));
+            margin: 32px auto;
+        }
+
+        .report-header,
+        .section,
+        .control-card,
+        .scope-notice {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .report-header {
+            padding: 30px;
+            margin-bottom: 22px;
+            border-top: 6px solid var(--primary);
+        }
+
+        .report-header h1 {
+            margin: 0 0 8px;
+            color: var(--primary);
+            font-size: 30px;
+            line-height: 1.2;
+        }
+
+        .report-subtitle {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .report-meta {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 28px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .section {
+            padding: 26px;
+            margin-bottom: 22px;
+        }
+
+        .section h2 {
+            margin: 0 0 18px;
+            color: var(--primary);
+            font-size: 23px;
+        }
+
+        .section h3 {
+            margin: 22px 0 10px;
+            font-size: 18px;
+        }
+
+        .organization-grid,
+        .score-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .organization-grid {
+            grid-template-columns:
+                repeat(auto-fit, minmax(210px, 1fr));
+        }
+
+        .score-grid {
+            grid-template-columns:
+                repeat(auto-fit, minmax(170px, 1fr));
+        }
+
+        .data-box,
+        .score-box {
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .data-label,
+        .score-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .data-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .score-value {
+            color: var(--primary);
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .coverage-box {
+            background: var(--primary-light);
+            border-color: #bfd4e6;
+        }
+
+        .summary-text {
+            white-space: pre-wrap;
+            background: var(--surface-muted);
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+            padding: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        .summary-meta {
+            margin-top: 14px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .status-counts {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 6px 11px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-satisfied {
+            background: var(--satisfied-background);
+            color: var(--satisfied-text);
+        }
+
+        .status-partial {
+            background: var(--partial-background);
+            color: var(--partial-text);
+        }
+
+        .status-not-satisfied {
+            background: var(--not-satisfied-background);
+            color: var(--not-satisfied-text);
+        }
+
+        .status-not-assessable {
+            background: var(--not-assessable-background);
+            color: var(--not-assessable-text);
+        }
+
+        .control-card {
+            margin-bottom: 18px;
+            padding: 22px;
+        }
+
+        .control-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-heading {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .control-heading h3 {
+            margin: 0;
+            color: var(--text);
+            font-size: 20px;
+        }
+
+        .control-id {
+            margin-top: 4px;
+            color: var(--text-muted);
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
+            font-size: 13px;
+        }
+
+        .control-status {
+            border-radius: 999px;
+            padding: 7px 13px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .control-details {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .detail-block {
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .detail-block h4 {
+            margin: 0 0 10px;
+            color: var(--primary);
+            font-size: 15px;
+        }
+
+        .detail-block p {
+            margin: 0;
+        }
+
+        ul {
+            margin: 8px 0 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .mapping-table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .mapping-role {
+            text-transform: capitalize;
+        }
+
+        .scope-notice {
+            padding: 20px;
+            margin-bottom: 22px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .scope-notice h2 {
+            margin: 0 0 10px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .scope-notice p {
+            margin: 6px 0;
+        }
+
+        .report-footer {
+            padding: 18px 0 30px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+            }
+
+            .report-container {
+                width: 100%;
+                margin: 0;
+            }
+
+            .report-header,
+            .section,
+            .control-card,
+            .scope-notice {
+                break-inside: avoid;
+                box-shadow: none;
+            }
+
+            .control-card {
+                page-break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .report-container {
+                width: min(100% - 18px, 1120px);
+                margin: 10px auto;
+            }
+
+            .report-header,
+            .section,
+            .control-card {
+                padding: 18px;
+            }
+
+            .report-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="report-container">
+
+        <header class="report-header">
+            <h1>{{ report_title }}</h1>
+
+            <p class="report-subtitle">
+                Deterministic assessment of four selected
+                cybersecurity-control areas
+            </p>
+
+            <div class="report-meta">
+                <span>
+                    <strong>Organization:</strong>
+                    {{ organization.name }}
+                </span>
+
+                <span>
+                    <strong>Generated:</strong>
+                    {{ generated_at }}
+                </span>
+
+                <span>
+                    <strong>Summary source:</strong>
+                    {{ summary.source }}
+                </span>
+
+                {% if summary.model_name %}
+                    <span>
+                        <strong>Model:</strong>
+                        {{ summary.model_name }}
+                    </span>
+                {% endif %}
+            </div>
+        </header>
+
+        <section class="section">
+            <h2>Organization Profile</h2>
+
+            <div class="organization-grid">
+                <div class="data-box">
+                    <span class="data-label">Name</span>
+                    <span class="data-value">
+                        {{ organization.name }}
+                    </span>
+                </div>
+
+                <div class="data-box">
+                    <span class="data-label">
+                        Employee-based size category
+                    </span>
+                    <span class="data-value">
+                        {{ organization.size | title }}
+                    </span>
+                </div>
+
+                <div class="data-box">
+                    <span class="data-label">Employees</span>
+                    <span class="data-value">
+                        {{ organization.employees }}
+                    </span>
+                </div>
+
+                <div class="data-box">
+                    <span class="data-label">Sector</span>
+                    <span class="data-value">
+                        {{ organization.sector }}
+                    </span>
+                </div>
+            </div>
+
+            {% if organization.description %}
+                <h3>Scenario Description</h3>
+                <p>{{ organization.description }}</p>
+            {% endif %}
+        </section>
+
+        <section class="section">
+            <h2>Assessment Score Summary</h2>
+
+            <div class="score-grid">
+                <div class="score-box coverage-box">
+                    <span class="score-label">
+                        Selected-controls coverage
+                    </span>
+                    <span class="score-value">
+                        {{ score.coverage_display }}
+                    </span>
+                </div>
+
+                <div class="score-box">
+                    <span class="score-label">
+                        Earned score
+                    </span>
+                    <span class="score-value">
+                        {{ score.earned_score }}
+                    </span>
+                </div>
+
+                <div class="score-box">
+                    <span class="score-label">
+                        Maximum score
+                    </span>
+                    <span class="score-value">
+                        {{ score.maximum_score }}
+                    </span>
+                </div>
+
+                <div class="score-box">
+                    <span class="score-label">
+                        Assessable controls
+                    </span>
+                    <span class="score-value">
+                        {{ score.assessable_controls }}
+                        / {{ score.total_controls }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="status-counts">
+                <span class="status-pill status-satisfied">
+                    Satisfied:
+                    {{ score.status_counts["Satisfied"] }}
+                </span>
+
+                <span class="status-pill status-partial">
+                    Partially Satisfied:
+                    {{ score.status_counts["Partially Satisfied"] }}
+                </span>
+
+                <span class="status-pill status-not-satisfied">
+                    Not Satisfied:
+                    {{ score.status_counts["Not Satisfied"] }}
+                </span>
+
+                <span class="status-pill status-not-assessable">
+                    Not Assessable:
+                    {{ score.status_counts["Not Assessable"] }}
+                </span>
+            </div>
+
+            <h3>Score Interpretation</h3>
+            <p>{{ score.interpretation }}</p>
+        </section>
+
+        <section class="section">
+            <h2>Executive Explanation</h2>
+
+            <div class="summary-text">{{ summary.text }}</div>
+
+            <div class="summary-meta">
+                This text was produced using:
+                <strong>{{ summary.source }}</strong>.
+                The deterministic status table below remains authoritative.
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Detailed Control Results</h2>
+
+            {% for result in results %}
+                <article class="control-card">
+                    <div class="control-heading">
+                        <div>
+                            <h3>{{ result.control_name }}</h3>
+                            <div class="control-id">
+                                {{ result.control_id }}
+                            </div>
+                        </div>
+
+                        <span
+                            class="
+                                control-status
+                                {{ result.status_css_class }}
+                            "
+                        >
+                            {{ result.status }}
+                        </span>
+                    </div>
+
+                    <div class="detail-block">
+                        <h4>Deterministic Rationale</h4>
+                        <p>{{ result.rationale }}</p>
+                    </div>
+
+                    <div class="control-details">
+                        <div class="detail-block">
+                            <h4>Recommendations</h4>
+
+                            {% if result.recommendations %}
+                                <ul>
+                                    {% for recommendation
+                                        in result.recommendations %}
+                                        <li>{{ recommendation }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>
+                                    No additional remediation action was
+                                    generated for this result.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="detail-block">
+                            <h4>Evidence Observations</h4>
+
+                            {% if result.evidence %}
+                                <ul>
+                                    {% for observation
+                                        in result.evidence %}
+                                        <li>{{ observation }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>
+                                    No evidence observation was available.
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="detail-block">
+                        <h4>Framework Mappings</h4>
+
+                        {% if result.mappings %}
+                            <div class="mapping-table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Framework</th>
+                                            <th>Reference</th>
+                                            <th>Short title</th>
+                                            <th>Role</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for mapping
+                                            in result.mappings %}
+                                            <tr>
+                                                <td>
+                                                    {{ mapping.framework }}
+                                                </td>
+                                                <td>
+                                                    {{ mapping.reference }}
+                                                </td>
+                                                <td>
+                                                    {{ mapping.title }}
+                                                </td>
+                                                <td class="mapping-role">
+                                                    {{ mapping.role }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p>No framework mappings were available.</p>
+                        {% endif %}
+                    </div>
+
+                    {% if result.metadata.assessment_scope %}
+                        <div class="detail-block">
+                            <h4>Assessment Scope</h4>
+                            <p>
+                                {{ result.metadata.assessment_scope }}
+                            </p>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </section>
+
+        <aside class="scope-notice">
+            <h2>Methodology and Scope Limitation</h2>
+
+            <p>{{ methodology_note }}</p>
+
+            <p>
+                <strong>Disclaimer:</strong>
+                {{ summary.disclaimer }}
+            </p>
+
+            <p>
+                The reported percentage is an internal,
+                researcher-defined coverage indicator for the four selected
+                controls. It is not an official ISO/IEC 27001 score or a
+                NIS2 compliance percentage.
+            </p>
+        </aside>
+
+        <footer class="report-footer">
+            Generated by the AI-Assisted Compliance Assessment
+            proof-of-concept.
+        </footer>
+
+    </main>
+</body>
+</html>

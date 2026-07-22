@@ -10,6 +10,14 @@ import pandas as pd
 import streamlit as st
 
 from src.ai_summary import AISummaryError, generate_summary
+from src.form_adapter import (
+    FormInputError,
+    build_backup_input,
+    build_incident_response_input,
+    build_mfa_input,
+    build_organization_payload,
+    build_patch_input,
+)
 from src.report_generator import (
     ReportGenerationError,
     generate_report,
@@ -234,21 +242,11 @@ def render_sidebar() -> None:
 
 def render_manual_entry_form() -> dict[str, Any] | None:
     """
-    Render a guided form for manual organization data entry.
+    Render a guided form and convert its values through the form adapter.
 
-    Returns the assembled organization dictionary when the user submits
-    the form, otherwise None. This produces a dictionary with the exact
-    same shape that JSON upload or demonstration scenarios produce — the
-    downstream pipeline (validation, rule engine, scoring, AI summary,
-    report) does not know or care how the dictionary was built.
-
-    Design note: when a top-level gate answer is "No" (e.g. MFA is not
-    implemented at all), the dependent boolean sub-fields are set to
-    False rather than None. This is deliberately more informative than
-    "unknown" — if MFA does not exist, it trivially does not cover
-    privileged accounts either. Fields with no natural "false" value
-    (frequencies, dates, day counts) remain None in that case, since
-    they are genuinely not applicable rather than confirmed-negative.
+    Streamlit collects the answers, while ``src.form_adapter`` creates the
+    canonical dictionary consumed by schema validation, the deterministic
+    rule engine, scoring, summary generation and report generation.
     """
     st.subheader("Organization Profile")
 
@@ -258,243 +256,356 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         "Medium (50–249 employees)": ("medium", 50, 249),
     }
 
-    name = st.text_input("Organization name", key="form_org_name")
-    size_label = st.selectbox(
-        "Organization size", options=list(size_ranges.keys()), key="form_org_size"
+    name = st.text_input(
+        "Organization name",
+        key="form_org_name",
     )
-    size_value, emp_min, emp_max = size_ranges[size_label]
+
+    size_label = st.selectbox(
+        "Organization size",
+        options=list(size_ranges.keys()),
+        key="form_org_size",
+    )
+    size_value, employee_minimum, employee_maximum = (
+        size_ranges[size_label]
+    )
 
     employees = st.number_input(
         "Number of employees",
-        min_value=emp_min,
-        max_value=emp_max,
-        value=emp_min,
+        min_value=employee_minimum,
+        max_value=employee_maximum,
+        value=employee_minimum,
+        step=1,
         key="form_org_employees",
-        help=f"Must be between {emp_min} and {emp_max} for the selected size category.",
+        help=(
+            f"Must be between {employee_minimum} and "
+            f"{employee_maximum} for the selected size category."
+        ),
     )
-    sector = st.text_input("Sector (e.g. retail, IT services)", key="form_org_sector")
+
+    sector = st.text_input(
+        "Sector (e.g. retail, IT services)",
+        key="form_org_sector",
+    )
+
     description = st.text_area(
-        "Optional description", key="form_org_description", height=68
+        "Optional description",
+        key="form_org_description",
+        height=68,
     )
 
     st.divider()
     st.subheader("Security Controls")
     st.caption(
-        "For each control, tick \"I don't have enough information\" if you "
-        "are unsure — the tool will mark it as Not Assessable rather than "
-        "guessing."
+        "For each control, select the insufficient-information option "
+        "when the answer is unknown. The tool will then return "
+        "Not Assessable instead of assuming failure."
+    )
+    st.caption(
+        "For the remaining checkbox questions, checked means Yes and "
+        "unchecked means No."
     )
 
-    # ---- MFA ----
-    with st.expander("🔐 Multi-Factor Authentication", expanded=True):
+    with st.expander(
+        "🔐 Multi-Factor Authentication",
+        expanded=True,
+    ):
         mfa_unknown = st.checkbox(
-            "I don't have enough information about MFA", key="mfa_unknown"
+            "I don't have enough information about MFA",
+            key="mfa_unknown",
         )
-        if mfa_unknown:
-            mfa_data = {
-                "implemented": None,
-                "privileged_accounts_covered": None,
-                "remote_access_covered": None,
-                "evidence_available": None,
-            }
-        else:
-            implemented = st.radio(
-                "Is multi-factor authentication implemented?",
-                ["Yes", "No"],
-                key="mfa_implemented",
-                horizontal=True,
-            ) == "Yes"
-            if implemented:
-                privileged = st.checkbox(
-                    "Covers privileged / admin accounts", key="mfa_privileged"
+
+        mfa_implemented = False
+        privileged_accounts_covered = False
+        remote_access_covered = False
+        mfa_evidence_available = False
+
+        if not mfa_unknown:
+            mfa_implemented = (
+                st.radio(
+                    "Is multi-factor authentication implemented?",
+                    ["Yes", "No"],
+                    key="mfa_implemented",
+                    horizontal=True,
                 )
-                remote = st.checkbox(
-                    "Covers remote access (VPN, cloud login, etc.)", key="mfa_remote"
+                == "Yes"
+            )
+
+            if mfa_implemented:
+                privileged_accounts_covered = st.checkbox(
+                    "Covers privileged / admin accounts",
+                    key="mfa_privileged",
                 )
-            else:
-                privileged, remote = False, False
-            evidence = st.checkbox(
-                "I have supporting evidence (policy, screenshots, config)",
+                remote_access_covered = st.checkbox(
+                    "Covers remote access (VPN, cloud login, etc.)",
+                    key="mfa_remote",
+                )
+
+            mfa_evidence_available = st.checkbox(
+                "I have supporting evidence "
+                "(policy, screenshots, config)",
                 key="mfa_evidence",
             )
-            mfa_data = {
-                "implemented": implemented,
-                "privileged_accounts_covered": privileged,
-                "remote_access_covered": remote,
-                "evidence_available": evidence,
-            }
 
-    # ---- Backup ----
-    with st.expander("💾 Backup and Restore Testing", expanded=True):
-        backup_unknown = st.checkbox(
-            "I don't have enough information about backups", key="backup_unknown"
+        mfa_data = build_mfa_input(
+            unknown=mfa_unknown,
+            implemented=mfa_implemented,
+            privileged_accounts_covered=(
+                privileged_accounts_covered
+            ),
+            remote_access_covered=remote_access_covered,
+            evidence_available=mfa_evidence_available,
         )
-        if backup_unknown:
-            backup_data = {
-                "backups_enabled": None,
-                "backup_frequency": None,
-                "offsite_or_separate_storage": None,
-                "restore_tests_performed": None,
-                "last_restore_test_date": None,
-                "evidence_available": None,
-            }
-        else:
-            enabled = st.radio(
-                "Are backups enabled?", ["Yes", "No"], key="backup_enabled", horizontal=True
-            ) == "Yes"
-            frequency, offsite, restore_tested, restore_date = None, False, False, None
-            if enabled:
-                frequency = st.selectbox(
+
+    with st.expander(
+        "💾 Backup and Restore Testing",
+        expanded=True,
+    ):
+        backup_unknown = st.checkbox(
+            "I don't have enough information about backups",
+            key="backup_unknown",
+        )
+
+        backups_enabled = False
+        backup_frequency: str | None = None
+        offsite_or_separate_storage = False
+        restore_tests_performed = False
+        last_restore_test_date = None
+        backup_evidence_available = False
+
+        if not backup_unknown:
+            backups_enabled = (
+                st.radio(
+                    "Are backups enabled?",
+                    ["Yes", "No"],
+                    key="backup_enabled",
+                    horizontal=True,
+                )
+                == "Yes"
+            )
+
+            if backups_enabled:
+                backup_frequency = st.selectbox(
                     "Backup frequency",
-                    ["continuous", "hourly", "daily", "weekly", "monthly", "irregular"],
+                    [
+                        "continuous",
+                        "hourly",
+                        "daily",
+                        "weekly",
+                        "monthly",
+                        "irregular",
+                    ],
                     key="backup_frequency",
                 )
-                offsite = st.checkbox(
+
+                offsite_or_separate_storage = st.checkbox(
                     "Stored separately / off-site from production systems",
                     key="backup_offsite",
                 )
-                restore_tested = st.checkbox(
-                    "Restore tests have been performed", key="backup_restore_tested"
+
+                restore_tests_performed = st.checkbox(
+                    "Restore tests have been performed",
+                    key="backup_restore_tested",
                 )
-                if restore_tested:
-                    restore_date_value = st.date_input(
-                        "Date of last restore test", key="backup_restore_date"
+
+                if restore_tests_performed:
+                    last_restore_test_date = st.date_input(
+                        "Date of last restore test",
+                        key="backup_restore_date",
                     )
-                    restore_date = restore_date_value.isoformat()
-            evidence = st.checkbox(
-                "I have supporting evidence (backup logs, test reports)",
+
+            backup_evidence_available = st.checkbox(
+                "I have supporting evidence "
+                "(backup logs, test reports)",
                 key="backup_evidence",
             )
-            backup_data = {
-                "backups_enabled": enabled,
-                "backup_frequency": frequency,
-                "offsite_or_separate_storage": offsite,
-                "restore_tests_performed": restore_tested,
-                "last_restore_test_date": restore_date,
-                "evidence_available": evidence,
-            }
 
-    # ---- Patch management ----
-    with st.expander("🩹 Patch and Vulnerability Management", expanded=True):
+        backup_data = build_backup_input(
+            unknown=backup_unknown,
+            backups_enabled=backups_enabled,
+            backup_frequency=backup_frequency,
+            offsite_or_separate_storage=(
+                offsite_or_separate_storage
+            ),
+            restore_tests_performed=restore_tests_performed,
+            last_restore_test_date=last_restore_test_date,
+            evidence_available=backup_evidence_available,
+        )
+
+    with st.expander(
+        "🩹 Patch and Vulnerability Management",
+        expanded=True,
+    ):
         patch_unknown = st.checkbox(
             "I don't have enough information about patch management",
             key="patch_unknown",
         )
-        if patch_unknown:
-            patch_data = {
-                "patch_process_defined": None,
-                "vulnerability_scanning_enabled": None,
-                "critical_patch_deadline_days": None,
-                "unsupported_software_present": None,
-                "patch_status_reviewed": None,
-                "evidence_available": None,
-            }
-        else:
-            process_defined = st.radio(
-                "Is a patch-management process defined?",
-                ["Yes", "No"],
-                key="patch_process_defined",
-                horizontal=True,
-            ) == "Yes"
-            scanning, deadline, unsupported, reviewed = False, None, False, False
-            if process_defined:
-                scanning = st.checkbox(
-                    "Vulnerability scanning is enabled", key="patch_scanning"
+
+        patch_process_defined = False
+        vulnerability_scanning_enabled = False
+        critical_patch_deadline_days: int | None = None
+        unsupported_software_present = False
+        patch_status_reviewed = False
+        patch_evidence_available = False
+
+        if not patch_unknown:
+            patch_process_defined = (
+                st.radio(
+                    "Is a patch-management process defined?",
+                    ["Yes", "No"],
+                    key="patch_process_defined",
+                    horizontal=True,
                 )
-                deadline = st.number_input(
-                    "Target deadline for critical patches (days)",
-                    min_value=0, max_value=365, value=30, key="patch_deadline",
+                == "Yes"
+            )
+
+            if patch_process_defined:
+                vulnerability_scanning_enabled = st.checkbox(
+                    "Vulnerability scanning is enabled",
+                    key="patch_scanning",
                 )
-                unsupported = st.checkbox(
+
+                critical_patch_deadline_days = int(
+                    st.number_input(
+                        "Target deadline for critical patches (days)",
+                        min_value=0,
+                        max_value=365,
+                        value=30,
+                        step=1,
+                        key="patch_deadline",
+                    )
+                )
+
+                unsupported_software_present = st.checkbox(
                     "Unsupported / end-of-life software is present",
                     key="patch_unsupported",
                 )
-                reviewed = st.checkbox(
-                    "Patch status is periodically reviewed", key="patch_reviewed"
+
+                patch_status_reviewed = st.checkbox(
+                    "Patch status is periodically reviewed",
+                    key="patch_reviewed",
                 )
-            evidence = st.checkbox(
-                "I have supporting evidence (scan reports, patch logs)",
+
+            patch_evidence_available = st.checkbox(
+                "I have supporting evidence "
+                "(scan reports, patch logs)",
                 key="patch_evidence",
             )
-            patch_data = {
-                "patch_process_defined": process_defined,
-                "vulnerability_scanning_enabled": scanning,
-                "critical_patch_deadline_days": deadline,
-                "unsupported_software_present": unsupported,
-                "patch_status_reviewed": reviewed,
-                "evidence_available": evidence,
-            }
 
-    # ---- Incident response ----
-    with st.expander("🚨 Incident Response Planning and Preparedness", expanded=True):
+        patch_data = build_patch_input(
+            unknown=patch_unknown,
+            process_defined=patch_process_defined,
+            vulnerability_scanning_enabled=(
+                vulnerability_scanning_enabled
+            ),
+            critical_patch_deadline_days=(
+                critical_patch_deadline_days
+            ),
+            unsupported_software_present=(
+                unsupported_software_present
+            ),
+            patch_status_reviewed=patch_status_reviewed,
+            evidence_available=patch_evidence_available,
+        )
+
+    with st.expander(
+        "🚨 Incident Response Planning and Preparedness",
+        expanded=True,
+    ):
         incident_unknown = st.checkbox(
             "I don't have enough information about incident response",
             key="incident_unknown",
         )
-        if incident_unknown:
-            incident_data = {
-                "plan_exists": None,
-                "roles_defined": None,
-                "communication_procedure_defined": None,
-                "reporting_procedure_defined": None,
-                "plan_tested": None,
-                "last_test_date": None,
-                "evidence_available": None,
-            }
-        else:
-            plan_exists = st.radio(
-                "Does an incident-response plan exist?",
-                ["Yes", "No"],
-                key="incident_plan_exists",
-                horizontal=True,
-            ) == "Yes"
-            roles, comms, reporting, tested, test_date = False, False, False, False, None
-            if plan_exists:
-                roles = st.checkbox("Roles and responsibilities are defined", key="incident_roles")
-                comms = st.checkbox(
-                    "Communication procedures are defined", key="incident_comms"
+
+        incident_plan_exists = False
+        incident_roles_defined = False
+        communication_procedure_defined = False
+        reporting_procedure_defined = False
+        incident_plan_tested = False
+        last_incident_test_date = None
+        incident_evidence_available = False
+
+        if not incident_unknown:
+            incident_plan_exists = (
+                st.radio(
+                    "Does an incident-response plan exist?",
+                    ["Yes", "No"],
+                    key="incident_plan_exists",
+                    horizontal=True,
                 )
-                reporting = st.checkbox(
-                    "Reporting procedures are defined", key="incident_reporting"
+                == "Yes"
+            )
+
+            if incident_plan_exists:
+                incident_roles_defined = st.checkbox(
+                    "Roles and responsibilities are defined",
+                    key="incident_roles",
                 )
-                tested = st.checkbox("The plan has been tested", key="incident_tested")
-                if tested:
-                    test_date_value = st.date_input(
-                        "Date of last test", key="incident_test_date"
+
+                communication_procedure_defined = st.checkbox(
+                    "Communication procedures are defined",
+                    key="incident_comms",
+                )
+
+                reporting_procedure_defined = st.checkbox(
+                    "Reporting procedures are defined",
+                    key="incident_reporting",
+                )
+
+                incident_plan_tested = st.checkbox(
+                    "The plan has been tested",
+                    key="incident_tested",
+                )
+
+                if incident_plan_tested:
+                    last_incident_test_date = st.date_input(
+                        "Date of last test",
+                        key="incident_test_date",
                     )
-                    test_date = test_date_value.isoformat()
-            evidence = st.checkbox(
-                "I have supporting evidence (exercise reports, minutes)",
+
+            incident_evidence_available = st.checkbox(
+                "I have supporting evidence "
+                "(exercise reports, minutes)",
                 key="incident_evidence",
             )
-            incident_data = {
-                "plan_exists": plan_exists,
-                "roles_defined": roles,
-                "communication_procedure_defined": comms,
-                "reporting_procedure_defined": reporting,
-                "plan_tested": tested,
-                "last_test_date": test_date,
-                "evidence_available": evidence,
-            }
+
+        incident_data = build_incident_response_input(
+            unknown=incident_unknown,
+            plan_exists=incident_plan_exists,
+            roles_defined=incident_roles_defined,
+            communication_procedure_defined=(
+                communication_procedure_defined
+            ),
+            reporting_procedure_defined=(
+                reporting_procedure_defined
+            ),
+            plan_tested=incident_plan_tested,
+            last_test_date=last_incident_test_date,
+            evidence_available=incident_evidence_available,
+        )
 
     st.divider()
 
-    if st.button("Validate and assess this organization", type="primary", key="assess_manual_form"):
-        return {
-            "organization": {
-                "name": name or "Unnamed organization",
-                "size": size_value,
-                "employees": int(employees),
-                "sector": sector or "Not specified",
-                "description": description or None,
-            },
-            "security_controls": {
-                "mfa": mfa_data,
-                "backup": backup_data,
-                "patch_management": patch_data,
-                "incident_response": incident_data,
-            },
-        }
+    if st.button(
+        "Validate and assess this organization",
+        type="primary",
+        key="assess_manual_form",
+    ):
+        try:
+            return build_organization_payload(
+                name=name,
+                size=size_value,
+                employees=int(employees),
+                sector=sector,
+                description=description,
+                mfa=mfa_data,
+                backup=backup_data,
+                patch_management=patch_data,
+                incident_response=incident_data,
+            )
+        except FormInputError as exc:
+            st.error(str(exc))
+            return None
 
     return None
 
@@ -509,7 +620,11 @@ def render_input_section() -> None:
     )
 
     upload_tab, scenario_tab, manual_tab = st.tabs(
-        ["Upload JSON", "Use demonstration scenario", "Fill out a form"]
+        [
+            "Upload JSON",
+            "Use demonstration scenario",
+            "Fill out a form",
+        ]
     )
 
     with upload_tab:

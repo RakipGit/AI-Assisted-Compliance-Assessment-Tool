@@ -2,7 +2,12 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Local secrets
 .env
+.env.local
+.streamlit/secrets.toml
+
 reports/*.html
 .vscode/
 .DS_Store

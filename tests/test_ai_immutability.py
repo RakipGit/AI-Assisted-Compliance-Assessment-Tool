@@ -73,6 +73,7 @@ def test_ai_summary_does_not_modify_control_statuses(
     assert statuses_after == statuses_before
     assert summary.source == "ai"
     assert summary.model_name == "mock-model"
+    assert summary.fallback_reason is None
 
 
 def test_ai_summary_does_not_modify_numeric_scores(
@@ -102,6 +103,7 @@ def test_ai_summary_does_not_modify_numeric_scores(
     assert scores_after == scores_before
     assert score.coverage_percentage == coverage_before
     assert summary.text == "Generated explanation."
+    assert summary.source == "ai"
 
 
 def test_generator_receives_text_prompt_not_result_objects(
@@ -143,8 +145,14 @@ def test_prompt_contains_fixed_statuses_and_constraints(
         score=score,
     )
 
-    assert "Do not change, reinterpret or recalculate any control status" in prompt
-    assert "Do not change or recalculate the coverage percentage" in prompt
+    assert (
+        "Do not change, reinterpret or recalculate any control status"
+        in prompt
+    )
+    assert (
+        "Do not change or recalculate the coverage percentage"
+        in prompt
+    )
     assert "Selected-controls coverage: 62.50%" in prompt
 
     assert "Fixed status: Satisfied" in prompt
@@ -191,16 +199,20 @@ def test_deterministic_fallback_works_without_ai_provider(
 
     assert summary.source == "deterministic-fallback"
     assert summary.model_name is None
+    assert summary.fallback_reason is None
     assert "Executive Summary" in summary.text
     assert "Priority Improvement Areas" in summary.text
-    assert "Incident Response Planning and Preparedness" in summary.text
+    assert (
+        "Incident Response Planning and Preparedness"
+        in summary.text
+    )
     assert summary.disclaimer == SUMMARY_DISCLAIMER
 
 
 def test_empty_ai_output_is_rejected(
     mixed_assessment: tuple,
 ) -> None:
-    """An empty provider response must not be accepted."""
+    """An empty provider response must not be accepted in strict mode."""
     organization, results, score = mixed_assessment
 
     with pytest.raises(
@@ -218,7 +230,7 @@ def test_empty_ai_output_is_rejected(
 def test_non_string_ai_output_is_rejected(
     mixed_assessment: tuple,
 ) -> None:
-    """Provider adapters must return textual output."""
+    """Provider adapters must return textual output in strict mode."""
     organization, results, score = mixed_assessment
 
     with pytest.raises(
@@ -238,7 +250,7 @@ def test_non_string_ai_output_is_rejected(
 def test_provider_exception_is_wrapped(
     mixed_assessment: tuple,
 ) -> None:
-    """Provider failures must become controlled application errors."""
+    """Provider failures must become controlled errors in strict mode."""
     organization, results, score = mixed_assessment
 
     def failing_generator(prompt: str) -> str:
@@ -285,4 +297,163 @@ def test_not_assessable_status_remains_unchanged_after_summary() -> None:
 
     assert before == after
     assert after["mfa"] is ControlStatus.NOT_ASSESSABLE
-    assert after["patch_management"] is ControlStatus.NOT_ASSESSABLE
+    assert (
+        after["patch_management"]
+        is ControlStatus.NOT_ASSESSABLE
+    )
+
+
+def test_provider_failure_uses_fallback_when_enabled(
+    mixed_assessment: tuple,
+) -> None:
+    """Provider failure must not terminate an assessment when enabled."""
+    organization, results, score = mixed_assessment
+
+    statuses_before = tuple(
+        (result.control_id, result.status)
+        for result in results
+    )
+    scores_before = tuple(
+        result.numeric_score
+        for result in results
+    )
+    coverage_before = score.coverage_percentage
+
+    def failing_generator(prompt: str) -> str:
+        raise RuntimeError("Provider unavailable")
+
+    summary = generate_summary(
+        organization=organization,
+        results=results,
+        score=score,
+        text_generator=failing_generator,
+        model_name="test-model",
+        fallback_on_error=True,
+    )
+
+    statuses_after = tuple(
+        (result.control_id, result.status)
+        for result in results
+    )
+    scores_after = tuple(
+        result.numeric_score
+        for result in results
+    )
+
+    assert summary.source == "deterministic-fallback"
+    assert summary.model_name is None
+    assert summary.fallback_reason == "Provider unavailable"
+    assert "Executive Summary" in summary.text
+
+    assert statuses_after == statuses_before
+    assert scores_after == scores_before
+    assert score.coverage_percentage == coverage_before
+
+
+def test_empty_provider_output_uses_fallback_when_enabled(
+    mixed_assessment: tuple,
+) -> None:
+    """Empty provider output must trigger deterministic fallback."""
+    organization, results, score = mixed_assessment
+
+    summary = generate_summary(
+        organization=organization,
+        results=results,
+        score=score,
+        text_generator=lambda prompt: "   ",
+        model_name="test-model",
+        fallback_on_error=True,
+    )
+
+    assert summary.source == "deterministic-fallback"
+    assert summary.model_name is None
+    assert (
+        summary.fallback_reason
+        == "The text generator returned an empty summary."
+    )
+    assert "Executive Summary" in summary.text
+
+
+def test_non_string_provider_output_uses_fallback_when_enabled(
+    mixed_assessment: tuple,
+) -> None:
+    """Invalid provider output must trigger deterministic fallback."""
+    organization, results, score = mixed_assessment
+
+    summary = generate_summary(
+        organization=organization,
+        results=results,
+        score=score,
+        text_generator=lambda prompt: {"invalid": True},
+        model_name="test-model",
+        fallback_on_error=True,
+    )
+
+    assert summary.source == "deterministic-fallback"
+    assert summary.model_name is None
+    assert (
+        summary.fallback_reason
+        == "The text generator must return a string."
+    )
+    assert "Executive Summary" in summary.text
+
+
+def test_successful_provider_has_no_fallback_reason(
+    mixed_assessment: tuple,
+) -> None:
+    """Successful AI generation must not be marked as fallback."""
+    organization, results, score = mixed_assessment
+
+    summary = generate_summary(
+        organization=organization,
+        results=results,
+        score=score,
+        text_generator=lambda prompt: "Generated explanation.",
+        model_name="test-model",
+        fallback_on_error=True,
+    )
+
+    assert summary.source == "ai"
+    assert summary.model_name == "test-model"
+    assert summary.fallback_reason is None
+    assert summary.text == "Generated explanation."
+
+
+def test_fallback_preserves_not_assessable_statuses() -> None:
+    """Provider fallback must preserve missing-information results."""
+    organization = load_json_file(
+        DATA_DIR / "scenario_missing_data.json"
+    )
+    results = evaluate_organization(organization)
+    score = calculate_score(results)
+
+    statuses_before = {
+        result.control_id: result.status
+        for result in results
+    }
+
+    def failing_generator(prompt: str) -> str:
+        raise RuntimeError("Simulated timeout")
+
+    summary = generate_summary(
+        organization=organization,
+        results=results,
+        score=score,
+        text_generator=failing_generator,
+        model_name="test-model",
+        fallback_on_error=True,
+    )
+
+    statuses_after = {
+        result.control_id: result.status
+        for result in results
+    }
+
+    assert summary.source == "deterministic-fallback"
+    assert summary.fallback_reason == "Simulated timeout"
+    assert statuses_after == statuses_before
+    assert statuses_after["mfa"] is ControlStatus.NOT_ASSESSABLE
+    assert (
+        statuses_after["patch_management"]
+        is ControlStatus.NOT_ASSESSABLE
+    )

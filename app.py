@@ -8,6 +8,7 @@ from typing import Any
 
 import pandas as pd
 import streamlit as st
+from dotenv import load_dotenv
 
 from src.ai_summary import AISummaryError, generate_summary
 from src.form_adapter import (
@@ -17,6 +18,10 @@ from src.form_adapter import (
     build_mfa_input,
     build_organization_payload,
     build_patch_input,
+)
+from src.llm_provider import (
+    call_openai,
+    get_openai_model,
 )
 from src.report_generator import (
     ReportGenerationError,
@@ -38,6 +43,9 @@ from src.validator import (
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_ROOT / "data"
+
+load_dotenv(PROJECT_ROOT / ".env")
+
 
 SCENARIO_FILES = {
     "Low maturity scenario": DATA_DIR / "scenario_low.json",
@@ -71,6 +79,7 @@ def initialize_session_state() -> None:
         "assessment_summary": None,
         "report_artifact": None,
         "source_label": None,
+        "use_ai_explanation": False,
     }
 
     for key, value in defaults.items():
@@ -79,7 +88,7 @@ def initialize_session_state() -> None:
 
 
 def clear_assessment_state() -> None:
-    """Clear all previously generated assessment output."""
+    """Clear previously generated assessment output."""
     st.session_state.organization_data = None
     st.session_state.assessment_results = None
     st.session_state.score_summary = None
@@ -106,7 +115,8 @@ def parse_uploaded_json(uploaded_file: Any) -> dict[str, Any]:
 
     Raises:
         JSONFileError:
-            If the file is not valid UTF-8 JSON or its root is not an object.
+            If the file is not valid UTF-8 JSON or its root is not an
+            object.
     """
     try:
         raw_bytes = uploaded_file.getvalue()
@@ -146,10 +156,20 @@ def run_assessment(
         results = evaluate_organization(organization_data)
         score = calculate_score(results)
 
+        use_ai = bool(
+            st.session_state.get(
+                "use_ai_explanation",
+                False,
+            )
+        )
+
         summary = generate_summary(
             organization=organization_data,
             results=results,
             score=score,
+            text_generator=call_openai if use_ai else None,
+            model_name=get_openai_model() if use_ai else None,
+            fallback_on_error=True,
         )
 
         report = generate_report(
@@ -192,6 +212,13 @@ def run_assessment(
     st.session_state.report_artifact = report
     st.session_state.source_label = source_label
 
+    if summary.fallback_reason:
+        st.warning(
+            "The AI provider was unavailable or returned invalid output. "
+            "A deterministic fallback explanation was used. "
+            f"Reason: {summary.fallback_reason}"
+        )
+
     st.success("Assessment completed successfully.")
 
 
@@ -204,7 +231,7 @@ def format_coverage(coverage: float | None) -> str:
 
 
 def render_sidebar() -> None:
-    """Render navigation and methodology information."""
+    """Render navigation, methodology and AI-mode controls."""
     with st.sidebar:
         st.title("Assessment Tool")
 
@@ -232,6 +259,36 @@ def render_sidebar() -> None:
             - The score is an internal selected-controls indicator.
             """
         )
+
+        st.divider()
+
+        st.subheader("Explanation mode")
+
+        st.toggle(
+            "Use real AI-generated explanation",
+            key="use_ai_explanation",
+            help=(
+                "When enabled, the application attempts to use the "
+                "configured OpenAI provider. If the provider is "
+                "unavailable, the assessment continues with a "
+                "deterministic fallback explanation."
+            ),
+        )
+
+        if st.session_state.use_ai_explanation:
+            st.caption(
+                f"Configured model: {get_openai_model()}"
+            )
+            st.caption(
+                "Provider failure automatically activates the "
+                "deterministic fallback."
+            )
+        else:
+            st.caption(
+                "Deterministic explanation mode is active."
+            )
+
+        st.divider()
 
         st.warning(
             "This tool does not provide ISO/IEC 27001 certification, "
@@ -266,6 +323,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         options=list(size_ranges.keys()),
         key="form_org_size",
     )
+
     size_value, employee_minimum, employee_maximum = (
         size_ranges[size_label]
     )
@@ -296,11 +354,13 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
     st.divider()
     st.subheader("Security Controls")
+
     st.caption(
         "For each control, select the insufficient-information option "
         "when the answer is unknown. The tool will then return "
         "Not Assessable instead of assuming failure."
     )
+
     st.caption(
         "For the remaining checkbox questions, checked means Yes and "
         "unchecked means No."
@@ -336,8 +396,10 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                     "Covers privileged / admin accounts",
                     key="mfa_privileged",
                 )
+
                 remote_access_covered = st.checkbox(
-                    "Covers remote access (VPN, cloud login, etc.)",
+                    "Covers remote access "
+                    "(VPN, cloud login, etc.)",
                     key="mfa_remote",
                 )
 
@@ -611,7 +673,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
 
 def render_input_section() -> None:
-    """Render upload, demonstration-scenario and manual-entry controls."""
+    """Render upload, scenario and manual-entry controls."""
     st.header("1. Organization Input")
 
     st.write(
@@ -711,14 +773,17 @@ def render_organization_profile(
         "Organization",
         organization["name"],
     )
+
     column_2.metric(
         "Employee-based size",
         str(organization["size"]).title(),
     )
+
     column_3.metric(
         "Employees",
         organization["employees"],
     )
+
     column_4.metric(
         "Sector",
         organization["sector"],
@@ -740,10 +805,12 @@ def render_score_summary(score: Any) -> None:
         "Selected-controls coverage",
         format_coverage(score.coverage_percentage),
     )
+
     assessable_column.metric(
         "Assessable controls",
         f"{score.assessable_controls}/{score.total_controls}",
     )
+
     earned_column.metric(
         "Earned score",
         f"{score.earned_score}/{score.maximum_score}",
@@ -756,21 +823,23 @@ def render_score_summary(score: Any) -> None:
     )
 
     status_counts = score.status_counts_dict()
-
     status_columns = st.columns(4)
 
     status_columns[0].metric(
         "Satisfied",
         status_counts["Satisfied"],
     )
+
     status_columns[1].metric(
         "Partially Satisfied",
         status_counts["Partially Satisfied"],
     )
+
     status_columns[2].metric(
         "Not Satisfied",
         status_counts["Not Satisfied"],
     )
+
     status_columns[3].metric(
         "Not Assessable",
         status_counts["Not Assessable"],
@@ -794,7 +863,9 @@ def build_results_dataframe(results: Any) -> pd.DataFrame:
                     else "Excluded"
                 ),
                 "Assessable": (
-                    "Yes" if result.is_assessable else "No"
+                    "Yes"
+                    if result.is_assessable
+                    else "No"
                 ),
             }
         )
@@ -872,7 +943,9 @@ def render_detailed_results(results: Any) -> None:
                     hide_index=True,
                 )
             else:
-                st.write("No framework mappings were available.")
+                st.write(
+                    "No framework mappings were available."
+                )
 
             assessment_scope = result.metadata_dict().get(
                 "assessment_scope"
@@ -889,13 +962,27 @@ def render_summary(summary: Any) -> None:
 
     source_display = {
         "ai": "AI-generated explanation",
-        "deterministic-fallback": "Deterministic fallback explanation",
+        "deterministic-fallback": (
+            "Deterministic fallback explanation"
+        ),
     }.get(summary.source, summary.source)
 
     st.caption(f"Summary source: {source_display}")
 
-    st.text(summary.text)
+    if summary.model_name:
+        st.caption(f"AI model: {summary.model_name}")
 
+    if summary.fallback_reason:
+        st.warning(
+            "The requested AI explanation could not be generated. "
+            "The explanation below was produced by the deterministic "
+            "fallback mechanism."
+        )
+
+        with st.expander("Technical fallback information"):
+            st.code(summary.fallback_reason)
+
+    st.text(summary.text)
     st.warning(summary.disclaimer)
 
 
@@ -959,7 +1046,9 @@ def main() -> None:
     initialize_session_state()
     render_sidebar()
 
-    st.title("AI-Assisted Cybersecurity Compliance Assessment")
+    st.title(
+        "AI-Assisted Cybersecurity Compliance Assessment"
+    )
 
     st.markdown(
         """

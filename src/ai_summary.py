@@ -27,30 +27,16 @@ class AIIntegrityError(RuntimeError):
 
 @dataclass(frozen=True)
 class AISummary:
-    """
-    Immutable textual summary of a deterministic assessment.
-
-    Attributes:
-        text:
-            Generated explanatory text.
-
-        source:
-            Source of the text, such as "ai" or "deterministic-fallback".
-
-        model_name:
-            Optional provider/model label used only for reporting.
-
-        disclaimer:
-            Scope limitation attached to every generated summary.
-    """
+    """Immutable textual summary of a deterministic assessment."""
 
     text: str
     source: str
     model_name: str | None
     disclaimer: str
+    fallback_reason: str | None = None
 
     def __post_init__(self) -> None:
-        if not self.text.strip():
+        if not isinstance(self.text, str) or not self.text.strip():
             raise ValueError("AI summary text must not be empty.")
 
         if self.source not in {"ai", "deterministic-fallback"}:
@@ -59,13 +45,36 @@ class AISummary:
                 "'deterministic-fallback'."
             )
 
-        if self.model_name is not None and not self.model_name.strip():
+        if self.model_name is not None:
+            if (
+                not isinstance(self.model_name, str)
+                or not self.model_name.strip()
+            ):
+                raise ValueError(
+                    "Model name must be None or a non-empty string."
+                )
+
+        if (
+            not isinstance(self.disclaimer, str)
+            or not self.disclaimer.strip()
+        ):
             raise ValueError(
-                "Model name must be None or a non-empty string."
+                "AI summary disclaimer must not be empty."
             )
 
-        if not self.disclaimer.strip():
-            raise ValueError("AI summary disclaimer must not be empty.")
+        if self.fallback_reason is not None:
+            if (
+                not isinstance(self.fallback_reason, str)
+                or not self.fallback_reason.strip()
+            ):
+                raise ValueError(
+                    "Fallback reason must be None or non-empty text."
+                )
+
+        if self.source == "ai" and self.fallback_reason is not None:
+            raise ValueError(
+                "An AI-generated summary cannot contain a fallback reason."
+            )
 
 
 SUMMARY_DISCLAIMER = (
@@ -79,12 +88,7 @@ SUMMARY_DISCLAIMER = (
 def _result_fingerprint(
     results: Sequence[ControlResult],
 ) -> tuple[tuple[Any, ...], ...]:
-    """
-    Create a stable snapshot of deterministic assessment results.
-
-    The snapshot is captured before and after text generation. Any detected
-    difference raises AIIntegrityError.
-    """
+    """Create a stable snapshot of deterministic assessment results."""
     return tuple(
         (
             result.control_id,
@@ -121,7 +125,10 @@ def _validate_results(
             "Every summary input must be a ControlResult instance."
         )
 
-    control_ids = [result.control_id for result in normalized_results]
+    control_ids = [
+        result.control_id
+        for result in normalized_results
+    ]
 
     duplicate_ids = sorted({
         control_id
@@ -139,7 +146,7 @@ def _validate_results(
 
 
 def _format_coverage(score: ScoreSummary) -> str:
-    """Return a safe textual representation of the coverage result."""
+    """Return a safe textual representation of coverage."""
     if score.coverage_percentage is None:
         return "Not calculable"
 
@@ -163,15 +170,13 @@ def build_ai_prompt(
     results: tuple[ControlResult, ...] | list[ControlResult],
     score: ScoreSummary,
 ) -> str:
-    """
-    Build a constrained prompt from deterministic assessment results.
-
-    The prompt instructs the language model to explain existing outcomes
-    without modifying, recalculating or contradicting them.
-    """
+    """Build a constrained prompt from deterministic results."""
     normalized_results = _validate_results(results)
 
-    organization_data = organization.get("organization", organization)
+    organization_data = organization.get(
+        "organization",
+        organization,
+    )
 
     if not isinstance(organization_data, dict):
         raise AISummaryError(
@@ -182,9 +187,18 @@ def build_ai_prompt(
         "name",
         "Unnamed organization",
     )
-    organization_size = organization_data.get("size", "Not specified")
-    employees = organization_data.get("employees", "Not specified")
-    sector = organization_data.get("sector", "Not specified")
+    organization_size = organization_data.get(
+        "size",
+        "Not specified",
+    )
+    employees = organization_data.get(
+        "employees",
+        "Not specified",
+    )
+    sector = organization_data.get(
+        "sector",
+        "Not specified",
+    )
 
     result_sections: list[str] = []
 
@@ -296,12 +310,7 @@ def generate_deterministic_fallback(
     results: tuple[ControlResult, ...] | list[ControlResult],
     score: ScoreSummary,
 ) -> str:
-    """
-    Generate a non-AI summary when no external text generator is configured.
-
-    This keeps the application functional without changing deterministic
-    assessment outcomes.
-    """
+    """Generate a non-AI explanation from deterministic results."""
     normalized_results = _validate_results(results)
 
     strengths = [
@@ -332,13 +341,15 @@ def generate_deterministic_fallback(
         if result.status.value != "Satisfied"
     ]
 
-    unique_recommendations = tuple(dict.fromkeys(recommendations))
+    unique_recommendations = tuple(
+        dict.fromkeys(recommendations)
+    )
 
     lines = [
         "Executive Summary",
         (
-            "The preliminary assessment produced selected-controls coverage "
-            f"of {_format_coverage(score)} based on "
+            "The preliminary assessment produced selected-controls "
+            f"coverage of {_format_coverage(score)} based on "
             f"{score.assessable_controls} assessable control(s)."
         ),
         "",
@@ -346,9 +357,14 @@ def generate_deterministic_fallback(
     ]
 
     if strengths:
-        lines.extend(f"- {control_name}" for control_name in strengths)
+        lines.extend(
+            f"- {control_name}"
+            for control_name in strengths
+        )
     else:
-        lines.append("- No selected control was fully satisfied.")
+        lines.append(
+            "- No selected control was fully satisfied."
+        )
 
     lines.extend(("", "Priority Improvement Areas"))
 
@@ -358,7 +374,9 @@ def generate_deterministic_fallback(
             for control_name in improvement_areas
         )
     else:
-        lines.append("- No assessable improvement area was identified.")
+        lines.append(
+            "- No assessable improvement area was identified."
+        )
 
     lines.extend(("", "Information Gaps"))
 
@@ -368,7 +386,9 @@ def generate_deterministic_fallback(
             for control_name in information_gaps
         )
     else:
-        lines.append("- No selected control was marked Not Assessable.")
+        lines.append(
+            "- No selected control was marked Not Assessable."
+        )
 
     lines.extend(("", "Recommended Next Steps"))
 
@@ -400,30 +420,27 @@ def generate_summary(
     score: ScoreSummary,
     text_generator: TextGenerator | None = None,
     model_name: str | None = None,
+    fallback_on_error: bool = False,
 ) -> AISummary:
     """
-    Generate an AI-assisted or deterministic fallback summary.
+    Generate an AI-assisted or deterministic fallback explanation.
 
-    The external generator receives only a text prompt. It does not receive
-    mutable ControlResult or ScoreSummary objects.
-
-    Raises:
-        AISummaryError:
-            If the generated output is missing or invalid.
-
-        AIIntegrityError:
-            If deterministic results change during generation.
+    When ``fallback_on_error`` is True, provider failures, invalid return
+    types and empty output result in a deterministic fallback instead of
+    terminating the assessment.
     """
     normalized_results = _validate_results(results)
     before_fingerprint = _result_fingerprint(normalized_results)
+
+    source = "deterministic-fallback"
+    effective_model_name: str | None = None
+    fallback_reason: str | None = None
 
     if text_generator is None:
         generated_text = generate_deterministic_fallback(
             results=normalized_results,
             score=score,
         )
-        source = "deterministic-fallback"
-        effective_model_name = None
     else:
         prompt = build_ai_prompt(
             organization=organization,
@@ -432,24 +449,39 @@ def generate_summary(
         )
 
         try:
-            generated_text = text_generator(prompt)
+            candidate_text = text_generator(prompt)
+
+            if not isinstance(candidate_text, str):
+                raise AISummaryError(
+                    "The text generator must return a string."
+                )
+
+            if not candidate_text.strip():
+                raise AISummaryError(
+                    "The text generator returned an empty summary."
+                )
+
+            generated_text = candidate_text.strip()
+            source = "ai"
+            effective_model_name = model_name
+
         except Exception as exc:
-            raise AISummaryError(
-                f"Text generation failed: {exc}"
-            ) from exc
+            if not fallback_on_error:
+                if isinstance(exc, AISummaryError):
+                    raise
 
-        source = "ai"
-        effective_model_name = model_name
+                raise AISummaryError(
+                    f"Text generation failed: {exc}"
+                ) from exc
 
-    if not isinstance(generated_text, str):
-        raise AISummaryError(
-            "The text generator must return a string."
-        )
+            fallback_reason = str(exc).strip() or (
+                exc.__class__.__name__
+            )
 
-    if not generated_text.strip():
-        raise AISummaryError(
-            "The text generator returned an empty summary."
-        )
+            generated_text = generate_deterministic_fallback(
+                results=normalized_results,
+                score=score,
+            )
 
     after_fingerprint = _result_fingerprint(normalized_results)
 
@@ -464,4 +496,5 @@ def generate_summary(
         source=source,
         model_name=effective_model_name,
         disclaimer=SUMMARY_DISCLAIMER,
+        fallback_reason=fallback_reason,
     )

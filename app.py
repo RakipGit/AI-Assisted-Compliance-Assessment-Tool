@@ -215,10 +215,9 @@ def render_sidebar() -> None:
 
         st.markdown(
             """
-            - Deterministic rules assign statuses.
-            - AI is limited to explanation and presentation.
-            - `Not Assessable` controls are excluded from scoring.
-            - The score is an internal selected-controls indicator.
+            - Your answers are evaluated against predefined control criteria..
+            - AI generates the executive explanation of the results.
+            - The final score applies only to the four selected controls.
             """
         )
 
@@ -226,14 +225,12 @@ def render_sidebar() -> None:
 
         st.divider()
 
-        st.subheader("AI-assisted reporting")
+        st.subheader("AI assisted reporting")
 
         st.markdown(
             """
     Executive explanations are generated automatically using AI.
 
-    If the AI provider is unavailable, the application continues
-    automatically using a deterministic fallback explanation.
     """ 
         )
         

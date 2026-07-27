@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -79,7 +78,6 @@ def initialize_session_state() -> None:
         "assessment_summary": None,
         "report_artifact": None,
         "source_label": None,
-        "use_ai_explanation": False,
     }
 
     for key, value in defaults.items():
@@ -109,38 +107,6 @@ def get_schema() -> dict[str, Any]:
     return load_schema(DATA_DIR / "organization_schema.json")
 
 
-def parse_uploaded_json(uploaded_file: Any) -> dict[str, Any]:
-    """
-    Decode an uploaded JSON file.
-
-    Raises:
-        JSONFileError:
-            If the file is not valid UTF-8 JSON or its root is not an
-            object.
-    """
-    try:
-        raw_bytes = uploaded_file.getvalue()
-        raw_text = raw_bytes.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise JSONFileError(
-            "The uploaded file must use UTF-8 encoding."
-        ) from exc
-
-    try:
-        data = json.loads(raw_text)
-    except json.JSONDecodeError as exc:
-        raise JSONFileError(
-            "Invalid JSON: "
-            f"line {exc.lineno}, column {exc.colno}: {exc.msg}"
-        ) from exc
-
-    if not isinstance(data, dict):
-        raise JSONFileError(
-            "The root value of the uploaded JSON must be an object."
-        )
-
-    return data
-
 
 def run_assessment(
     organization_data: dict[str, Any],
@@ -156,19 +122,12 @@ def run_assessment(
         results = evaluate_organization(organization_data)
         score = calculate_score(results)
 
-        use_ai = bool(
-            st.session_state.get(
-                "use_ai_explanation",
-                False,
-            )
-        )
-
         summary = generate_summary(
             organization=organization_data,
             results=results,
             score=score,
-            text_generator=call_openai if use_ai else None,
-            model_name=get_openai_model() if use_ai else None,
+            text_generator=call_openai,
+            model_name=get_openai_model(),
             fallback_on_error=True,
         )
 
@@ -214,10 +173,13 @@ def run_assessment(
 
     if summary.fallback_reason:
         st.warning(
-            "The AI provider was unavailable or returned invalid output. "
-            "A deterministic fallback explanation was used. "
-            f"Reason: {summary.fallback_reason}"
+            "The AI-generated explanation was temporarily unavailable. "
+            "The assessment was completed using the deterministic "
+            "fallback explanation."
         )
+
+        with st.expander("Technical details"):
+            st.code(summary.fallback_reason)
 
     st.success("Assessment completed successfully.")
 
@@ -237,8 +199,8 @@ def render_sidebar() -> None:
 
         st.markdown(
             """
-            This proof-of-concept performs a preliminary assessment of four
-            selected cybersecurity-control areas:
+            This proof of concept (PoC) tool performs a preliminary assessment of four
+            selected cybersecurity control areas:
 
             - Multi-Factor Authentication
             - Backup and Restore Testing
@@ -260,35 +222,25 @@ def render_sidebar() -> None:
             """
         )
 
+        
+
         st.divider()
 
-        st.subheader("Explanation mode")
+        st.subheader("AI-assisted reporting")
 
-        st.toggle(
-            "Use real AI-generated explanation",
-            key="use_ai_explanation",
-            help=(
-                "When enabled, the application attempts to use the "
-                "configured OpenAI provider. If the provider is "
-                "unavailable, the assessment continues with a "
-                "deterministic fallback explanation."
-            ),
+        st.markdown(
+            """
+    Executive explanations are generated automatically using AI.
+
+    If the AI provider is unavailable, the application continues
+    automatically using a deterministic fallback explanation.
+    """ 
         )
+        
 
-        if st.session_state.use_ai_explanation:
-            st.caption(
-                f"Configured model: {get_openai_model()}"
-            )
-            st.caption(
-                "Provider failure automatically activates the "
-                "deterministic fallback."
-            )
-        else:
-            st.caption(
-                "Deterministic explanation mode is active."
-            )
-
-        st.divider()
+        st.caption(
+    f"Configured AI model: {get_openai_model()}"
+)
 
         st.warning(
             "This tool does not provide ISO/IEC 27001 certification, "
@@ -673,52 +625,29 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
 
 def render_input_section() -> None:
-    """Render upload, scenario and manual-entry controls."""
+    """Render manual-entry and demonstration-scenario controls."""
     st.header("1. Organization Input")
 
     st.write(
-        "Upload an organization JSON file, select one of the maintained "
-        "synthetic scenarios, or fill out a guided form."
+        "Complete the guided assessment form or use one of the "
+        "maintained demonstration scenarios."
     )
 
-    upload_tab, scenario_tab, manual_tab = st.tabs(
+    manual_tab, scenario_tab = st.tabs(
         [
-            "Upload JSON",
-            "Use demonstration scenario",
             "Fill out a form",
+            "Use demonstration scenario",
         ]
     )
 
-    with upload_tab:
-        uploaded_file = st.file_uploader(
-            "Select an organization JSON file",
-            type=["json"],
-            help=(
-                "The file must conform to "
-                "data/organization_schema.json."
-            ),
-        )
+    with manual_tab:
+        organization_data = render_manual_entry_form()
 
-        if uploaded_file is not None:
-            st.caption(f"Selected file: {uploaded_file.name}")
-
-            if st.button(
-                "Validate and assess uploaded file",
-                type="primary",
-                key="assess_uploaded_file",
-            ):
-                try:
-                    organization_data = parse_uploaded_json(
-                        uploaded_file
-                    )
-                except JSONFileError as exc:
-                    clear_assessment_state()
-                    st.error(str(exc))
-                else:
-                    run_assessment(
-                        organization_data=organization_data,
-                        source_label=uploaded_file.name,
-                    )
+        if organization_data is not None:
+            run_assessment(
+                organization_data=organization_data,
+                source_label="Manual form entry",
+            )
 
     with scenario_tab:
         scenario_name = st.selectbox(
@@ -748,16 +677,7 @@ def render_input_section() -> None:
                 organization_data=scenario_data,
                 source_label=selected_path.name,
             )
-
-    with manual_tab:
-        organization_data = render_manual_entry_form()
-
-        if organization_data is not None:
-            run_assessment(
-                organization_data=organization_data,
-                source_label="Manual form entry",
-            )
-
+            
 
 def render_organization_profile(
     organization_data: dict[str, Any],
@@ -1024,15 +944,10 @@ def render_completed_assessment() -> None:
         )
     ):
         st.info(
-            "Upload a valid JSON file, run a demonstration scenario, or "
-            "fill out the form to begin the assessment."
+            "Complete the assessment form or run a demonstration scenario  "
+            "to begin."
         )
         return
-
-    st.caption(
-        f"Current assessment source: "
-        f"{st.session_state.source_label}"
-    )
 
     render_organization_profile(organization_data)
     render_score_summary(score)

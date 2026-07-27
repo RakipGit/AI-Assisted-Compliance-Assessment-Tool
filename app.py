@@ -202,7 +202,7 @@ def render_sidebar() -> None:
             This proof of concept (PoC) tool performs a preliminary assessment of four
             selected cybersecurity control areas:
 
-            - Multi-Factor Authentication
+            - Multi Factor Authentication
             - Backup and Restore Testing
             - Patch and Vulnerability Management
             - Incident Response Planning and Preparedness
@@ -215,7 +215,7 @@ def render_sidebar() -> None:
 
         st.markdown(
             """
-            - Your answers are evaluated against predefined control criteria..
+            - Your answers are evaluated against predefined control criteria.
             - AI generates the executive explanation of the results.
             - The final score applies only to the four selected controls.
             """
@@ -316,7 +316,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
     )
 
     with st.expander(
-        "🔐 Multi-Factor Authentication",
+        "🔐 Multi Factor Authentication",
         expanded=True,
     ):
         mfa_unknown = st.checkbox(

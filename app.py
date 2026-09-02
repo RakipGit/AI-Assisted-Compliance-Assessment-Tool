@@ -204,7 +204,7 @@ def render_sidebar() -> None:
 
             - Multi Factor Authentication
             - Backup and Restore Testing
-            - Patch and Vulnerability Management
+            - Vulnerability and Patch Management
             - Incident Response Planning and Preparedness
             """
         )

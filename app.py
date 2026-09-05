@@ -195,18 +195,21 @@ def format_coverage(coverage: float | None) -> str:
 def render_sidebar() -> None:
     """Render navigation, methodology and AI-mode controls."""
     with st.sidebar:
-        st.title("Assessment Tool")
+        st.subheader("Compliance Tool")
 
         st.markdown(
             """
-            This proof of concept (PoC) tool performs a preliminary assessment of four
-            selected cybersecurity control areas:
+            This proof of concept (PoC) tool performs a preliminary assessment of the 
+            following four cybersecurity control areas mapped to ISO/IEC 27001:2022 and NIS2.
 
             - Multi Factor Authentication
             - Backup and Restore Testing
             - Vulnerability and Patch Management
             - Incident Response Planning and Preparedness
+
+            It evaluates the provided information and generates an AI-assisted explanation of the assessment results.
             """
+
         )
 
         st.divider()
@@ -221,7 +224,6 @@ def render_sidebar() -> None:
             """
         )
 
-        
 
         st.divider()
 
@@ -263,12 +265,12 @@ def render_manual_entry_form() -> dict[str, Any] | None:
     }
 
     name = st.text_input(
-        "Organization name",
+        "Name",
         key="form_org_name",
     )
 
     size_label = st.selectbox(
-        "Organization size",
+        "Size",
         options=list(size_ranges.keys()),
         key="form_org_size",
     )
@@ -291,7 +293,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
     )
 
     sector = st.text_input(
-        "Sector (e.g. retail, IT services)",
+        "Sector (e.g. IT services, Healthcare, Banking)",
         key="form_org_sector",
     )
 
@@ -305,8 +307,8 @@ def render_manual_entry_form() -> dict[str, Any] | None:
     st.subheader("Security Controls")
 
     st.caption(
-        "For each control, select the insufficient-information option "
-        "when the answer is unknown. The tool will then return "
+        "For each control, select the insufficient information option "
+        "if the answer is unknown. The tool will then return "
         "Not Assessable instead of assuming failure."
     )
 
@@ -332,7 +334,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         if not mfa_unknown:
             mfa_implemented = (
                 st.radio(
-                    "Is multi-factor authentication implemented?",
+                    "Is MFA implemented?",
                     ["Yes", "No"],
                     key="mfa_implemented",
                     horizontal=True,
@@ -342,7 +344,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
             if mfa_implemented:
                 privileged_accounts_covered = st.checkbox(
-                    "Covers privileged / admin accounts",
+                    "Covers administrative / privileged accounts",
                     key="mfa_privileged",
                 )
 
@@ -352,9 +354,9 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                     key="mfa_remote",
                 )
 
-            mfa_evidence_available = st.checkbox(
-                "I have supporting evidence "
-                "(policy, screenshots, config)",
+                mfa_evidence_available = st.checkbox(
+                "Supporting evidence available "
+                "(policies, screenshots, configurations)",
                 key="mfa_evidence",
             )
 
@@ -399,18 +401,18 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                 backup_frequency = st.selectbox(
                     "Backup frequency",
                     [
-                        "continuous",
-                        "hourly",
-                        "daily",
-                        "weekly",
-                        "monthly",
-                        "irregular",
+                        "Continuous",
+                        "Hourly",
+                        "Daily",
+                        "Weekly",
+                        "Monthly",
+                        "Irregular",
                     ],
                     key="backup_frequency",
                 )
 
                 offsite_or_separate_storage = st.checkbox(
-                    "Stored separately / off-site from production systems",
+                    "Backups are stored separately or off site from production systems",
                     key="backup_offsite",
                 )
 
@@ -426,7 +428,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                     )
 
             backup_evidence_available = st.checkbox(
-                "I have supporting evidence "
+                "Supporting evidence available "
                 "(backup logs, test reports)",
                 key="backup_evidence",
             )
@@ -498,7 +500,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                 )
 
             patch_evidence_available = st.checkbox(
-                "I have supporting evidence "
+                "Supporting evidence available "
                 "(scan reports, patch logs)",
                 key="patch_evidence",
             )
@@ -575,7 +577,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                     )
 
             incident_evidence_available = st.checkbox(
-                "I have supporting evidence "
+                "Supporting evidence available "
                 "(exercise reports, minutes)",
                 key="incident_evidence",
             )
@@ -623,12 +625,6 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
 def render_input_section() -> None:
     """Render manual-entry and demonstration-scenario controls."""
-    st.header("1. Organization Input")
-
-    st.write(
-        "Complete the guided assessment form or use one of the "
-        "maintained demonstration scenarios."
-    )
 
     manual_tab, scenario_tab = st.tabs(
         [
@@ -961,19 +957,6 @@ def main() -> None:
     st.title(
         "AI-Assisted Cybersecurity Compliance Assessment"
     )
-
-    st.markdown(
-        """
-        This prototype supports a preliminary assessment of four selected
-        cybersecurity-control areas mapped to ISO/IEC 27001:2022 and NIS2.
-
-        The assessment statuses and score are produced by deterministic
-        rules. The explanation layer does not determine or modify those
-        results.
-        """
-    )
-
-    st.divider()
 
     render_input_section()
 

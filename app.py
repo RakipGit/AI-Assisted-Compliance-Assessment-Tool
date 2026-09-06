@@ -204,7 +204,7 @@ def render_sidebar() -> None:
 
             - Multi Factor Authentication
             - Backup and Restore Testing
-            - Vulnerability and Patch Management
+            - Vulnerability Management
             - Incident Response Planning and Preparedness
 
             It evaluates the provided information and generates an AI-assisted explanation of the assessment results.
@@ -344,7 +344,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
             if mfa_implemented:
                 privileged_accounts_covered = st.checkbox(
-                    "Covers administrative / privileged accounts",
+                    "Covers administrative and privileged accounts",
                     key="mfa_privileged",
                 )
 
@@ -401,12 +401,12 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                 backup_frequency = st.selectbox(
                     "Backup frequency",
                     [
-                        "Continuous",
-                        "Hourly",
-                        "Daily",
-                        "Weekly",
-                        "Monthly",
-                        "Irregular",
+                        "continuous",
+                        "hourly",
+                        "daily",
+                        "weekly",
+                        "monthly",
+                        "irregular",
                     ],
                     key="backup_frequency",
                 )
@@ -417,7 +417,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                 )
 
                 restore_tests_performed = st.checkbox(
-                    "Restore tests have been performed",
+                    "Restore tests have been performed ",
                     key="backup_restore_tested",
                 )
 
@@ -427,7 +427,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                         key="backup_restore_date",
                     )
 
-            backup_evidence_available = st.checkbox(
+                backup_evidence_available = st.checkbox(
                 "Supporting evidence available "
                 "(backup logs, test reports)",
                 key="backup_evidence",
@@ -446,11 +446,11 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         )
 
     with st.expander(
-        "🩹 Patch and Vulnerability Management",
+        "🩹 Vulnerability Management",
         expanded=True,
     ):
         patch_unknown = st.checkbox(
-            "I don't have enough information about patch management",
+            "I don't have enough information about vulnerability management",
             key="patch_unknown",
         )
 
@@ -464,7 +464,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         if not patch_unknown:
             patch_process_defined = (
                 st.radio(
-                    "Is a patch-management process defined?",
+                    "Is a vulnerability management process defined?",
                     ["Yes", "No"],
                     key="patch_process_defined",
                     horizontal=True,
@@ -473,14 +473,10 @@ def render_manual_entry_form() -> dict[str, Any] | None:
             )
 
             if patch_process_defined:
-                vulnerability_scanning_enabled = st.checkbox(
-                    "Vulnerability scanning is enabled",
-                    key="patch_scanning",
-                )
 
                 critical_patch_deadline_days = int(
                     st.number_input(
-                        "Target deadline for critical patches (days)",
+                        "Maximum timeframe for applying critical patches (days)",
                         min_value=0,
                         max_value=365,
                         value=30,
@@ -489,8 +485,13 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                     )
                 )
 
+                vulnerability_scanning_enabled = st.checkbox(
+                                    "Regular vulnerability scanning is performed",
+                                    key="patch_scanning",
+                                )
+
                 unsupported_software_present = st.checkbox(
-                    "Unsupported / end-of-life software is present",
+                    "Unsupported or end-of-life software is in use",
                     key="patch_unsupported",
                 )
 
@@ -499,7 +500,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                     key="patch_reviewed",
                 )
 
-            patch_evidence_available = st.checkbox(
+                patch_evidence_available = st.checkbox(
                 "Supporting evidence available "
                 "(scan reports, patch logs)",
                 key="patch_evidence",
@@ -541,7 +542,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         if not incident_unknown:
             incident_plan_exists = (
                 st.radio(
-                    "Does an incident-response plan exist?",
+                    "Does an incident response plan exist?",
                     ["Yes", "No"],
                     key="incident_plan_exists",
                     horizontal=True,
@@ -556,12 +557,12 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                 )
 
                 communication_procedure_defined = st.checkbox(
-                    "Communication procedures are defined",
+                    "Communication arrangements are defined",
                     key="incident_comms",
                 )
 
                 reporting_procedure_defined = st.checkbox(
-                    "Reporting procedures are defined",
+                    "Incident reporting procedures are clearly defined",
                     key="incident_reporting",
                 )
 
@@ -576,9 +577,9 @@ def render_manual_entry_form() -> dict[str, Any] | None:
                         key="incident_test_date",
                     )
 
-            incident_evidence_available = st.checkbox(
+                incident_evidence_available = st.checkbox(
                 "Supporting evidence available "
-                "(exercise reports, minutes)",
+                "(exercise reports, documented instractions)",
                 key="incident_evidence",
             )
 
@@ -600,7 +601,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
     st.divider()
 
     if st.button(
-        "Validate and assess this organization",
+        "Run Assessment",
         type="primary",
         key="assess_manual_form",
     ):
@@ -678,7 +679,7 @@ def render_organization_profile(
     """Render organization metadata."""
     organization = organization_data["organization"]
 
-    st.header("2. Organization Profile")
+    st.header("1. Organization Profile")
 
     column_1, column_2, column_3, column_4 = st.columns(4)
 
@@ -688,12 +689,12 @@ def render_organization_profile(
     )
 
     column_2.metric(
-        "Employee-based size",
+        "Size",
         str(organization["size"]).title(),
     )
 
     column_3.metric(
-        "Employees",
+        "Number of employees",
         organization["employees"],
     )
 
@@ -710,12 +711,12 @@ def render_organization_profile(
 
 def render_score_summary(score: Any) -> None:
     """Render assessment score and status distribution."""
-    st.header("3. Assessment Summary")
+    st.header("2. Assessment Summary")
 
     coverage_column, assessable_column, earned_column = st.columns(3)
 
     coverage_column.metric(
-        "Selected-controls coverage",
+        "Score",
         format_coverage(score.coverage_percentage),
     )
 
@@ -725,15 +726,10 @@ def render_score_summary(score: Any) -> None:
     )
 
     earned_column.metric(
-        "Earned score",
+        "Earned points",
         f"{score.earned_score}/{score.maximum_score}",
     )
 
-    st.caption(
-        "The percentage is a researcher-defined internal indicator for "
-        "the four selected controls. It is not an official ISO/IEC 27001 "
-        "or NIS2 compliance score."
-    )
 
     status_counts = score.status_counts_dict()
     status_columns = st.columns(4)
@@ -788,7 +784,7 @@ def build_results_dataframe(results: Any) -> pd.DataFrame:
 
 def render_detailed_results(results: Any) -> None:
     """Render summary and expanded deterministic results."""
-    st.header("4. Detailed Control Results")
+    st.header("3. Detailed Control Results")
 
     results_dataframe = build_results_dataframe(results)
 
@@ -870,11 +866,11 @@ def render_detailed_results(results: Any) -> None:
 
 
 def render_summary(summary: Any) -> None:
-    """Render AI-assisted or deterministic fallback explanation."""
-    st.header("5. Executive Explanation")
+    """Render AI assisted or deterministic fallback explanation."""
+    st.header("4. Executive Explanation")
 
     source_display = {
-        "ai": "AI-generated explanation",
+        "ai": "AI generated explanation",
         "deterministic-fallback": (
             "Deterministic fallback explanation"
         ),
@@ -901,7 +897,7 @@ def render_summary(summary: Any) -> None:
 
 def render_report_download(report: Any) -> None:
     """Render the HTML report download action."""
-    st.header("6. Download Report")
+    st.header("5. Download Report")
 
     st.write(
         "Download a standalone HTML report containing the deterministic "
@@ -937,8 +933,7 @@ def render_completed_assessment() -> None:
         )
     ):
         st.info(
-            "Complete the assessment form or run a demonstration scenario  "
-            "to begin."
+            "Complete the assessment form or select the demonstration scenario"
         )
         return
 
@@ -955,7 +950,7 @@ def main() -> None:
     render_sidebar()
 
     st.title(
-        "AI-Assisted Cybersecurity Compliance Assessment"
+        "AI Assisted Cybersecurity Compliance Assessment"
     )
 
     render_input_section()

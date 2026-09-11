@@ -271,7 +271,7 @@ def render_report_html(
     """
     Render the complete HTML report without writing it to disk.
 
-    The report uses only already-computed deterministic results and score
+    The report uses only already computed deterministic results and score
     information. It does not perform control evaluation or scoring.
     """
     normalized_results = _normalize_results(results)

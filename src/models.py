@@ -73,7 +73,7 @@ class ControlResult:
 
         control_name:
             Human-readable name, such as
-            "Multi-Factor Authentication".
+            "Multi Factor Authentication".
 
         status:
             Deterministically assigned ControlStatus.

@@ -138,9 +138,6 @@ def _interpret_coverage(
 ) -> str:
     """
     Return a restrained interpretation of the prototype coverage indicator.
-
-    The interpretation is intentionally descriptive and must not be treated
-    as an official compliance determination.
     """
     if coverage_percentage is None:
         return (
@@ -148,40 +145,29 @@ def _interpret_coverage(
             "controls contained sufficient information for assessment."
         )
 
-    if coverage_percentage == 100.0:
-        assessment_text = (
-            "All assessable selected controls satisfied the prototype rules."
-        )
-    elif coverage_percentage >= 75.0:
-        assessment_text = (
-            "The assessable selected controls show a comparatively high "
-            "level of coverage, with remaining improvement areas."
-        )
-    elif coverage_percentage >= 50.0:
-        assessment_text = (
-            "The assessable selected controls show partial coverage and "
-            "require targeted improvements."
-        )
-    elif coverage_percentage > 0.0:
-        assessment_text = (
-            "The assessable selected controls show limited coverage and "
-            "require substantial improvement."
-        )
-    else:
-        assessment_text = (
-            "None of the assessable selected controls satisfied or partially "
-            "satisfied the prototype rules."
+    if assessable_controls < total_controls:
+        not_assessable_count = total_controls - assessable_controls
+
+        control_word = (
+            "control"
+            if not_assessable_count == 1
+            else "controls"
         )
 
-    if assessable_controls < total_controls:
-        assessment_text += (
-            f" Coverage is based on {assessable_controls} of "
+        verb = (
+            "was"
+            if not_assessable_count == 1
+            else "were"
+        )
+
+        return (
+            f"Coverage is based on {assessable_controls} of "
             f"{total_controls} selected controls because "
-            f"{total_controls - assessable_controls} control(s) were "
+            f"{not_assessable_count} {control_word} {verb} "
             "Not Assessable."
         )
 
-    return assessment_text
+    return ""
 
 
 def calculate_score(

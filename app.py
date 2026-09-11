@@ -805,7 +805,7 @@ def render_detailed_results(results: Any) -> None:
             f"— {result.status.value}",
             expanded=True,
         ):
-            st.markdown("#### Deterministic rationale")
+            st.markdown("#### Results")
             st.write(result.rationale)
 
             recommendation_column, evidence_column = st.columns(2)
@@ -823,14 +823,14 @@ def render_detailed_results(results: Any) -> None:
                     )
 
             with evidence_column:
-                st.markdown("#### Evidence observations")
+                st.markdown("#### Evidence ")
 
                 if result.evidence:
                     for observation in result.evidence:
                         st.write(f"- {observation}")
                 else:
                     st.write(
-                        "No evidence observation was available."
+                        "No evidence was available."
                     )
 
             st.markdown("#### Framework mappings")
@@ -861,7 +861,7 @@ def render_detailed_results(results: Any) -> None:
             )
 
             if assessment_scope:
-                st.markdown("#### Assessment scope")
+                st.markdown("#### Scope")
                 st.write(assessment_scope)
 
 
@@ -899,13 +899,8 @@ def render_report_download(report: Any) -> None:
     """Render the HTML report download action."""
     st.header("5. Download Report")
 
-    st.write(
-        "Download a standalone HTML report containing the deterministic "
-        "results, coverage summary, framework mappings and explanation."
-    )
-
     st.download_button(
-        label="Download HTML assessment report",
+        label="Download",
         data=report.html.encode("utf-8"),
         file_name=report.filename,
         mime="text/html",

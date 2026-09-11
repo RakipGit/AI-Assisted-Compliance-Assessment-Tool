@@ -141,16 +141,15 @@ def _evidence_observations(
 
     if evidence_available is False:
         return (
-            "Supporting evidence was not declared available; "
-            "the result is based on self-reported input.",
+          "Supporting evidence is not available because the "
+          "because a vulnerability management process does not exist.",
         )
 
     return (
-        "Evidence availability was not specified; "
-        "the result is based on the available self-reported input.",
+        "Supporting evidence is unknown because the user does not "
+        "have enough information about incident response. ",
     )
-
-
+  
 def _missing_fields(
     control: dict[str, Any],
     fields: tuple[str, ...],
@@ -201,7 +200,7 @@ def evaluate_mfa(
     control: dict[str, Any],
     catalogue: dict[str, Any],
 ) -> ControlResult:
-    """Evaluate multi-factor authentication implementation."""
+    """Evaluate multi factor authentication implementation."""
     control_id = "mfa"
     control_data = _get_catalogue_control(catalogue, control_id)
     evidence = _evidence_observations(control)
@@ -218,7 +217,7 @@ def evaluate_mfa(
                 "'implemented' value was not provided."
             ),
             recommendations=(
-                "Confirm whether multi-factor authentication is implemented.",
+                "Confirm whether multi factor authentication is implemented.",
                 "Document the systems and account categories covered by MFA.",
             ),
             evidence=evidence,
@@ -230,12 +229,12 @@ def evaluate_mfa(
             control_data=control_data,
             status=ControlStatus.NOT_SATISFIED,
             rationale=(
-                "Multi-factor authentication was explicitly reported as "
+                "Multi factor authentication was explicitly reported as "
                 "not implemented."
             ),
             recommendations=(
                 "Implement MFA for privileged accounts.",
-                "Implement MFA for remote-access services.",
+                "Implement MFA for remote access services.",
                 "Retain configuration or policy evidence demonstrating deployment.",
             ),
             evidence=evidence,
@@ -259,7 +258,7 @@ def evaluate_mfa(
             ),
             recommendations=(
                 "Confirm whether MFA covers privileged accounts.",
-                "Confirm whether MFA covers remote-access services.",
+                "Confirm whether MFA covers remote access services.",
             ),
             evidence=evidence,
             additional_metadata=(("missing_fields", ", ".join(missing)),),
@@ -275,7 +274,7 @@ def evaluate_mfa(
             status=ControlStatus.SATISFIED,
             rationale=(
                 "MFA is implemented and covers both privileged accounts "
-                "and remote-access services."
+                "and remote access services."
             ),
             recommendations=(
                 "Periodically review MFA coverage and authentication logs.",
@@ -464,7 +463,7 @@ def evaluate_patch_management(
     control: dict[str, Any],
     catalogue: dict[str, Any],
 ) -> ControlResult:
-    """Evaluate patch and technical-vulnerability management."""
+    """Evaluate patch and technical vulnerability management."""
     control_id = "patch_management"
     control_data = _get_catalogue_control(catalogue, control_id)
     evidence = _evidence_observations(control)
@@ -493,13 +492,13 @@ def evaluate_patch_management(
             control_data=control_data,
             status=ControlStatus.NOT_SATISFIED,
             rationale=(
-                "A defined patch-management process was explicitly reported "
+                "A defined vulnerability management process was explicitly reported "
                 "as absent."
             ),
             recommendations=(
-                "Establish a documented patch-management process.",
+                "Establish a documented patch management process.",
                 "Assign ownership and remediation timelines.",
-                "Introduce vulnerability scanning and patch-status reviews.",
+                "Introduce vulnerability scanning and patch status reviews.",
                 "Identify and replace unsupported software.",
             ),
             evidence=evidence,
@@ -562,7 +561,7 @@ def evaluate_patch_management(
             control_data=control_data,
             status=ControlStatus.SATISFIED,
             rationale=(
-                "A patch-management process is defined, vulnerability "
+                "A patch management process is defined, vulnerability "
                 "scanning is enabled, critical patches are targeted within "
                 f"{CRITICAL_PATCH_DEADLINE_DAYS} days, unsupported software "
                 "is not reported and patch status is reviewed."
@@ -592,7 +591,7 @@ def evaluate_patch_management(
 
     if not deadline_is_acceptable:
         gaps.append(
-            "the critical-patch deadline exceeds the prototype threshold "
+            "the critical patch deadline exceeds the prototype threshold "
             f"of {CRITICAL_PATCH_DEADLINE_DAYS} days"
         )
         recommendations.append(
@@ -609,7 +608,7 @@ def evaluate_patch_management(
     if not patch_status_reviewed:
         gaps.append("patch status is not periodically reviewed")
         recommendations.append(
-            "Introduce periodic patch-status and remediation reviews."
+            "Introduce periodic patch status and remediation reviews."
         )
 
     return _build_result(
@@ -617,7 +616,7 @@ def evaluate_patch_management(
         control_data=control_data,
         status=ControlStatus.PARTIALLY_SATISFIED,
         rationale=(
-            "A patch-management process exists, but the assessed process "
+            "A patch management process exists, but the assessed process "
             f"contains gaps: {'; '.join(gaps)}."
         ),
         recommendations=tuple(recommendations),
@@ -637,7 +636,7 @@ def evaluate_incident_response(
     control: dict[str, Any],
     catalogue: dict[str, Any],
 ) -> ControlResult:
-    """Evaluate incident-response planning and preparedness."""
+    """Evaluate incident response planning and preparedness."""
     control_id = "incident_response"
     control_data = _get_catalogue_control(catalogue, control_id)
     evidence = _evidence_observations(control)
@@ -650,11 +649,11 @@ def evaluate_incident_response(
             control_data=control_data,
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
-                "Incident-response preparedness could not be assessed "
+                "Incident response preparedness could not be assessed "
                 "because the 'plan_exists' value was not provided."
             ),
             recommendations=(
-                "Confirm whether an incident-response plan exists.",
+                "Confirm whether an incident response plan exists.",
                 "Document incident roles, communications, reporting and testing.",
             ),
             evidence=evidence,
@@ -666,11 +665,11 @@ def evaluate_incident_response(
             control_data=control_data,
             status=ControlStatus.NOT_SATISFIED,
             rationale=(
-                "An incident-response plan was explicitly reported as absent."
+                "An incident response plan was explicitly reported as absent."
             ),
             recommendations=(
-                "Develop and approve an incident-response plan.",
-                "Assign incident-response roles and responsibilities.",
+                "Develop and approve an incident response plan.",
+                "Assign incident response roles and responsibilities.",
                 "Define internal communication and external reporting procedures.",
                 "Test the plan through exercises or simulations.",
             ),
@@ -691,12 +690,12 @@ def evaluate_incident_response(
             control_data=control_data,
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
-                "An incident-response plan was reported, but preparedness "
+                "An incident response plan was reported, but preparedness "
                 "could not be assessed because the following data is missing: "
                 f"{', '.join(missing)}."
             ),
             recommendations=(
-                "Confirm assigned incident-response roles.",
+                "Confirm assigned incident response roles.",
                 "Document communication and reporting procedures.",
                 "Confirm whether the plan has been tested.",
             ),
@@ -732,12 +731,12 @@ def evaluate_incident_response(
             control_data=control_data,
             status=ControlStatus.SATISFIED,
             rationale=(
-                "An incident-response plan exists, roles are assigned, "
+                "An incident response plan exists, roles are assigned, "
                 "communication and reporting procedures are defined and "
                 "a documented test has been performed."
             ),
             recommendations=(
-                "Continue periodic incident-response exercises and update "
+                "Continue periodic incident response exercises and update "
                 "the plan based on lessons identified.",
             ),
             evidence=evidence,
@@ -750,9 +749,9 @@ def evaluate_incident_response(
     recommendations: list[str] = []
 
     if not roles_defined:
-        gaps.append("incident-response roles are not defined")
+        gaps.append("incident response roles are not defined")
         recommendations.append(
-            "Assign incident-response roles and responsibilities."
+            "Assign incident response roles and responsibilities."
         )
 
     if not communication_defined:
@@ -768,14 +767,14 @@ def evaluate_incident_response(
         )
 
     if not plan_tested:
-        gaps.append("the incident-response plan has not been tested")
+        gaps.append("the incident response plan has not been tested")
         recommendations.append(
-            "Test the incident-response plan through an exercise or simulation."
+            "Test the incident response plan through an exercise or simulation."
         )
     elif last_test_date is None:
-        gaps.append("the incident-response test date is not documented")
+        gaps.append("the incident response test date is not documented")
         recommendations.append(
-            "Record the date and outcome of incident-response exercises."
+            "Record the date and outcome of incident response exercises."
         )
 
     return _build_result(
@@ -783,7 +782,7 @@ def evaluate_incident_response(
         control_data=control_data,
         status=ControlStatus.PARTIALLY_SATISFIED,
         rationale=(
-            "An incident-response plan exists, but preparedness is "
+            "An incident response plan exists, but preparedness is "
             f"incomplete: {'; '.join(gaps)}."
         ),
         recommendations=tuple(recommendations),

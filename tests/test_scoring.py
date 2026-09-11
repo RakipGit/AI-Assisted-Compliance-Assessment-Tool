@@ -86,7 +86,7 @@ def test_all_not_assessable_returns_no_percentage() -> None:
     results = (
         ControlResult(
             control_id="mfa",
-            control_name="Multi-Factor Authentication",
+            control_name="Multi Factor Authentication",
             status=ControlStatus.NOT_ASSESSABLE,
             rationale="Insufficient information.",
         ),
@@ -113,7 +113,7 @@ def test_confirmed_zero_coverage_is_distinct_from_unavailable_score() -> None:
     results = (
         ControlResult(
             control_id="mfa",
-            control_name="Multi-Factor Authentication",
+            control_name="Multi Factor Authentication",
             status=ControlStatus.NOT_SATISFIED,
             rationale="MFA is not implemented.",
         ),
@@ -136,7 +136,7 @@ def test_duplicate_control_results_are_rejected() -> None:
     """One control must not contribute to the score twice."""
     result = ControlResult(
         control_id="mfa",
-        control_name="Multi-Factor Authentication",
+        control_name="Multi Factor Authentication",
         status=ControlStatus.SATISFIED,
         rationale="MFA is implemented.",
     )

@@ -66,9 +66,9 @@ def test_report_contains_expected_assessment_content(
     assert report.path is None
     assert "62.50%" in report.html
     assert "Mediterranean Business Solutions" in report.html
-    assert "Multi-Factor Authentication" in report.html
+    assert "Multi Factor Authentication" in report.html
     assert "Backup and Restore Testing" in report.html
-    assert "Patch and Vulnerability Management" in report.html
+    assert "Vulnerability Management" in report.html
     assert (
         "Incident Response Planning and Preparedness"
         in report.html

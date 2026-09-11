@@ -228,7 +228,7 @@ def build_ai_prompt(
                     f"Control name: {result.control_name}",
                     f"Fixed status: {result.status.value}",
                     f"Fixed numeric score: {result.numeric_score}",
-                    f"Deterministic rationale: {result.rationale}",
+                    f"Results: {result.rationale}",
                     (
                         "Framework references: "
                         f"{_format_mapping_references(result)}"

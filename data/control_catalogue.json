@@ -19,10 +19,10 @@
   "controls": {
     "mfa": {
       "control_id": "mfa",
-      "control_name": "Multi-Factor Authentication",
+      "control_name": "Multi Factor Authentication",
       "category": "Identity and access management",
-      "description": "Assessment of whether multi-factor authentication is implemented for privileged accounts and remote access.",
-      "assessment_scope": "The assessment focuses on the multi-factor authentication component of NIS2 Article 21(2)(j), rather than all secure-communication measures included in that point.",
+      "description": "Assessment of whether multi factor authentication is implemented for privileged accounts and remote access.",
+      "assessment_scope": "The assessment focuses on the multi factor authentication requirements of NIS2 Article 21(2)(j), rather than all the security measures included in that section.",
       "input_object": "security_controls.mfa",
       "framework_mappings": [
         {
@@ -34,7 +34,7 @@
         {
           "framework": "NIS2",
           "reference": "Article 21(2)(j)",
-          "title": "Multi-factor or continuous authentication and secure communications",
+          "title": "Multi factor or continuous authentication and secure communications",
           "role": "primary"
         }
       ]
@@ -44,7 +44,7 @@
       "control_name": "Backup and Restore Testing",
       "category": "Business continuity and resilience",
       "description": "Assessment of whether information backups are enabled, stored separately where appropriate and supported by restoration testing.",
-      "assessment_scope": "The assessment focuses on backup management and restoration testing within NIS2 Article 21(2)(c), rather than the complete areas of business continuity, disaster recovery and crisis management.",
+      "assessment_scope": "The assessment focuses on backup management and restoration testing within NIS2 Article 21(2)(c), rather than the broader areas of business continuity, disaster recovery and crisis management.",
       "input_object": "security_controls.backup",
       "framework_mappings": [
         {
@@ -63,10 +63,10 @@
     },
     "patch_management": {
       "control_id": "patch_management",
-      "control_name": "Patch and Vulnerability Management",
+      "control_name": "Vulnerability Management",
       "category": "Technical vulnerability management",
       "description": "Assessment of whether the organization defines a patch-management process, identifies technical vulnerabilities, reviews patch status and manages unsupported software.",
-      "assessment_scope": "The assessment focuses on vulnerability handling, patch management and unsupported software within NIS2 Article 21(2)(e). It does not assess the complete system acquisition, development and maintenance lifecycle.",
+      "assessment_scope": "The assessment focuses on vulnerability handling, patch management and unsupported software within NIS2 Article 21(2)(e). It does not assess the full lifecycle of network and information system acquisition, development and maintenance.",
       "input_object": "security_controls.patch_management",
       "framework_mappings": [
         {
@@ -88,7 +88,7 @@
       "control_name": "Incident Response Planning and Preparedness",
       "category": "Information security incident management",
       "description": "Assessment of whether an incident-response plan exists, defines responsibilities, includes communication and reporting procedures and is periodically tested.",
-      "assessment_scope": "The assessment focuses on incident-response planning, assigned roles, communication, reporting and testing within NIS2 Article 21(2)(b). It does not assess the complete operational incident-management lifecycle.",
+      "assessment_scope": "The assessment focuses on incident response planning, assigned roles, communication, reporting and testing within NIS2 Article 21(2)(b). It does not assess all the aspects of operational incident management.",
       "input_object": "security_controls.incident_response",
       "framework_mappings": [
         {

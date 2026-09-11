@@ -137,18 +137,12 @@ def _evidence_observations(
     evidence_available = control.get("evidence_available")
 
     if evidence_available is True:
-        return ("Supporting evidence was declared available.",)
+        return ("Supporting evidence is available.",)
 
     if evidence_available is False:
-        return (
-          "Supporting evidence is not available because the "
-          "because a vulnerability management process does not exist.",
-        )
+        return ("Supporting evidence is not available.",)
 
-    return (
-        "Supporting evidence is unknown because the user does not "
-        "have enough information about incident response. ",
-    )
+    return ("Supporting evidence availability is unknown.",)
   
 def _missing_fields(
     control: dict[str, Any],
@@ -213,8 +207,8 @@ def evaluate_mfa(
             control_data=control_data,
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
-                "MFA implementation could not be assessed because the "
-                "'implemented' value was not provided."
+                "MFA implementation could not be assessed because the user "
+                "does not have enough information about the organization's MFA."
             ),
             recommendations=(
                 "Confirm whether multi factor authentication is implemented.",
@@ -326,8 +320,8 @@ def evaluate_backup(
             control_data=control_data,
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
-                "Backup implementation could not be assessed because the "
-                "'backups_enabled' value was not provided."
+                "Backup implementation could not be assessed because the user "
+                "does not have enough information about the organization's backups."
             ),
             recommendations=(
                 "Confirm whether organizational information is backed up.",
@@ -476,8 +470,8 @@ def evaluate_patch_management(
             control_data=control_data,
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
-                "Patch management could not be assessed because the "
-                "'patch_process_defined' value was not provided."
+                "Vulnerability management could not be assessed because the user "
+                "does not have enough information about the organization's vulnerability management process."
             ),
             recommendations=(
                 "Confirm whether a documented patch-management process exists.",
@@ -518,12 +512,12 @@ def evaluate_patch_management(
             control_data=control_data,
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
-                "A patch-management process was reported, but the control "
+                "A vulnerability management process was reported, but the control "
                 "could not be assessed because the following data is missing: "
                 f"{', '.join(missing)}."
             ),
             recommendations=(
-                "Document vulnerability-scanning practices.",
+                "Document vulnerability scanning practices.",
                 "Define the remediation deadline for critical patches.",
                 "Confirm whether unsupported software is present.",
                 "Document periodic patch-status reviews.",
@@ -650,7 +644,8 @@ def evaluate_incident_response(
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
                 "Incident response preparedness could not be assessed "
-                "because the 'plan_exists' value was not provided."
+                "because because the user does not have enough information"
+                "about the organization's incident response procedures."
             ),
             recommendations=(
                 "Confirm whether an incident response plan exists.",

@@ -897,7 +897,7 @@ def render_summary(summary: Any) -> None:
 
 def render_report_download(report: Any) -> None:
     """Render the HTML report download action."""
-    st.header("5. Download Report")
+    st.header("4. Download Report")
 
     st.download_button(
         label="Download",
@@ -935,7 +935,6 @@ def render_completed_assessment() -> None:
     render_organization_profile(organization_data)
     render_score_summary(score)
     render_detailed_results(results)
-    render_summary(summary)
     render_report_download(report)
 
 

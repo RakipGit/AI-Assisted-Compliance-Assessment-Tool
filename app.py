@@ -63,7 +63,7 @@ STATUS_ICONS = {
 
 
 st.set_page_config(
-    page_title="AI-Assisted Compliance Assessment",
+    page_title="AI Cybersecurity Compliance Assessment",
     page_icon="🛡️",
     layout="wide",
 )
@@ -187,7 +187,7 @@ def run_assessment(
 def format_coverage(coverage: float | None) -> str:
     """Return coverage as a presentation string."""
     if coverage is None:
-        return "Not calculable"
+        return "N/A"
 
     return f"{coverage:.2f}%"
 
@@ -281,8 +281,7 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
     employees = st.number_input(
         "Number of employees",
-        min_value=employee_minimum,
-        max_value=employee_maximum,
+        min_value=1,
         value=employee_minimum,
         step=1,
         key="form_org_employees",
@@ -605,6 +604,22 @@ def render_manual_entry_form() -> dict[str, Any] | None:
         type="primary",
         key="assess_manual_form",
     ):
+        if not name.strip():
+            st.error("Organization name is required.")
+            return None
+
+        if not (
+            employee_minimum
+            <= int(employees)
+            <= employee_maximum
+        ):
+            st.error(
+                f"Employee count does not match the selected organization size. "
+                f"For {size_label}, enter a value between "
+                f"{employee_minimum} and {employee_maximum}."
+            )
+            return None
+
         try:
             return build_organization_payload(
                 name=name,
@@ -625,52 +640,14 @@ def render_manual_entry_form() -> dict[str, Any] | None:
 
 
 def render_input_section() -> None:
-    """Render manual-entry and demonstration-scenario controls."""
+    """Render the manual assessment form."""
+    organization_data = render_manual_entry_form()
 
-    manual_tab, scenario_tab = st.tabs(
-        [
-            "Fill out a form",
-            "Use demonstration scenario",
-        ]
-    )
-
-    with manual_tab:
-        organization_data = render_manual_entry_form()
-
-        if organization_data is not None:
-            run_assessment(
-                organization_data=organization_data,
-                source_label="Manual form entry",
-            )
-
-    with scenario_tab:
-        scenario_name = st.selectbox(
-            "Select a synthetic scenario",
-            options=list(SCENARIO_FILES.keys()),
-            index=4,
+    if organization_data is not None:
+        run_assessment(
+            organization_data=organization_data,
+            source_label="Manual form entry",
         )
-
-        selected_path = SCENARIO_FILES[scenario_name]
-
-        with st.expander("Preview selected scenario"):
-            scenario_preview = load_scenario_file(
-                str(selected_path)
-            )
-            st.json(scenario_preview)
-
-        if st.button(
-            "Run selected demonstration scenario",
-            type="primary",
-            key="assess_demo_scenario",
-        ):
-            scenario_data = load_scenario_file(
-                str(selected_path)
-            )
-
-            run_assessment(
-                organization_data=scenario_data,
-                source_label=selected_path.name,
-            )
             
 
 def render_organization_profile(
@@ -708,6 +685,12 @@ def render_organization_profile(
     if description:
         st.info(description)
 
+def format_score_value(value: float) -> str:
+    """Format score without unnecessary trailing .0."""
+    if float(value).is_integer():
+        return str(int(value))
+
+    return f"{value:.1f}"
 
 def render_score_summary(score: Any) -> None:
     """Render assessment score and status distribution."""
@@ -727,9 +710,11 @@ def render_score_summary(score: Any) -> None:
 
     earned_column.metric(
         "Earned points",
-        f"{score.earned_score}/{score.maximum_score}",
+        (
+        f"{format_score_value(score.earned_score)}"
+        f"/{score.assessable_controls}"
+        ),
     )
-
 
     status_counts = score.status_counts_dict()
     status_columns = st.columns(4)
@@ -754,7 +739,8 @@ def render_score_summary(score: Any) -> None:
         status_counts["Not Assessable"],
     )
 
-    st.info(score.interpretation)
+    if score.not_assessable_controls > 0 and score.interpretation:
+        st.info(score.interpretation)
 
 
 def build_results_dataframe(results: Any) -> pd.DataFrame:

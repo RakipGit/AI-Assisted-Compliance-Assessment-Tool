@@ -175,7 +175,7 @@ def _format_coverage(
 ) -> str:
     """Return the coverage value in presentation format."""
     if score.coverage_percentage is None:
-        return "Not calculable"
+        return "N/A"
 
     return f"{score.coverage_percentage:.2f}%"
 

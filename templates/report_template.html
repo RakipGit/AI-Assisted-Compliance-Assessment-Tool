@@ -12,11 +12,11 @@
     </title>
 
     <link
-    rel="icon"
-    href="data:image/svg+xml,
-    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
-        <text y='.9em' font-size='90'>📋</text>
-    </svg>"
+        rel="icon"
+        href="data:image/svg+xml,
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+            <text y='.9em' font-size='90'>📋</text>
+        </svg>"
     >
 
     <style>
@@ -198,9 +198,12 @@
         }
 
         .summary-meta {
-            margin-top: 14px;
+            margin-bottom: 14px;
             color: var(--text-muted);
             font-size: 13px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 28px;
         }
 
         .status-counts {
@@ -414,23 +417,10 @@
             <h1>{{ report_title }}</h1>
 
             <div class="report-meta">
-
                 <span>
                     <strong>Generated:</strong>
                     {{ generated_at }}
                 </span>
-
-                <span>
-                    <strong>Source:</strong>
-                    {{ summary.source | upper }}
-                </span>
-
-                {% if summary.model_name %}
-                    <span>
-                        <strong>Model:</strong>
-                        {{ summary.model_name | replace('gpt-', 'GPT-') | replace('-mini', ' Mini') }}
-                    </span>
-                {% endif %}
             </div>
         </header>
 
@@ -536,11 +526,24 @@
                     {{ score.status_counts["Not Assessable"] }}
                 </span>
             </div>
-
         </section>
 
         <section class="section">
             <h2>Executive Explanation</h2>
+
+            <div class="summary-meta">
+                <span>
+                    <strong>Source:</strong>
+                    {{ summary.source | upper }}
+                </span>
+
+                {% if summary.model_name %}
+                    <span>
+                        <strong>Model:</strong>
+                        {{ summary.model_name | replace('gpt-', 'GPT-') | replace('-mini', ' Mini') }}
+                    </span>
+                {% endif %}
+            </div>
 
             <div class="summary-text">
                 {% for line in summary.text.split('\n') %}
@@ -566,7 +569,6 @@
                     {% endif %}
                 {% endfor %}
             </div>
-
         </section>
 
         <section class="section">

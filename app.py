@@ -927,9 +927,6 @@ def render_completed_assessment() -> None:
             report,
         )
     ):
-        st.info(
-            "Complete the assessment form or select the demonstration scenario"
-        )
         return
 
     render_organization_profile(organization_data)

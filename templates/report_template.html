@@ -163,12 +163,30 @@
         }
 
         .summary-text {
-            white-space: pre-wrap;
             background: var(--surface-muted);
             border-left: 4px solid var(--primary);
             border-radius: 4px;
             padding: 18px;
             overflow-wrap: anywhere;
+        }
+
+        .summary-heading {
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .summary-heading:first-child {
+            margin-top: 0;
+        }
+
+        .summary-line {
+            margin-bottom: 4px;
+            white-space: normal;
+        }
+
+        .summary-space {
+            height: 8px;
         }
 
         .summary-meta {
@@ -387,16 +405,7 @@
         <header class="report-header">
             <h1>{{ report_title }}</h1>
 
-            <p class="report-subtitle">
-                Deterministic assessment of four selected
-                cybersecurity-control areas
-            </p>
-
             <div class="report-meta">
-                <span>
-                    <strong>Organization:</strong>
-                    {{ organization.name }}
-                </span>
 
                 <span>
                     <strong>Generated:</strong>
@@ -404,14 +413,14 @@
                 </span>
 
                 <span>
-                    <strong>Summary source:</strong>
-                    {{ summary.source }}
+                    <strong>Source:</strong>
+                    {{ summary.source | upper }}
                 </span>
 
                 {% if summary.model_name %}
                     <span>
                         <strong>Model:</strong>
-                        {{ summary.model_name }}
+                        {{ summary.model_name | replace('gpt-', 'GPT-') | replace('-mini', ' Mini') }}
                     </span>
                 {% endif %}
             </div>
@@ -430,7 +439,7 @@
 
                 <div class="data-box">
                     <span class="data-label">
-                        Employee-based size category
+                        Size
                     </span>
                     <span class="data-value">
                         {{ organization.size | title }}
@@ -453,18 +462,16 @@
             </div>
 
             {% if organization.description %}
-                <h3>Scenario Description</h3>
-                <p>{{ organization.description }}</p>
             {% endif %}
         </section>
 
         <section class="section">
-            <h2>Assessment Score Summary</h2>
+            <h2>Score Summary</h2>
 
             <div class="score-grid">
                 <div class="score-box coverage-box">
                     <span class="score-label">
-                        Selected-controls coverage
+                        Coverage
                     </span>
                     <span class="score-value">
                         {{ score.coverage_display }}
@@ -522,20 +529,36 @@
                 </span>
             </div>
 
-            <h3>Score Interpretation</h3>
-            <p>{{ score.interpretation }}</p>
         </section>
 
         <section class="section">
             <h2>Executive Explanation</h2>
 
-            <div class="summary-text">{{ summary.text }}</div>
+            <div class="summary-text">
+                {% for line in summary.text.split('\n') %}
+                    {% set clean_line = line.strip() %}
 
-            <div class="summary-meta">
-                This text was produced using:
-                <strong>{{ summary.source }}</strong>.
-                The deterministic status table below remains authoritative.
+                    {% if clean_line in [
+                        'Overview',
+                        'Management Interpretation',
+                        'Priority Actions',
+                        'Information Gap'
+                    ] %}
+                        <div class="summary-heading">
+                            {{ clean_line }}
+                        </div>
+
+                    {% elif clean_line %}
+                        <div class="summary-line">
+                            {{ clean_line }}
+                        </div>
+
+                    {% else %}
+                        <div class="summary-space"></div>
+                    {% endif %}
+                {% endfor %}
             </div>
+
         </section>
 
         <section class="section">
@@ -546,9 +569,6 @@
                     <div class="control-heading">
                         <div>
                             <h3>{{ result.control_name }}</h3>
-                            <div class="control-id">
-                                {{ result.control_id }}
-                            </div>
                         </div>
 
                         <span
@@ -562,7 +582,7 @@
                     </div>
 
                     <div class="detail-block">
-                        <h4>Deterministic Rationale</h4>
+                        <h4>Results</h4>
                         <p>{{ result.rationale }}</p>
                     </div>
 
@@ -586,7 +606,7 @@
                         </div>
 
                         <div class="detail-block">
-                            <h4>Evidence Observations</h4>
+                            <h4>Evidence</h4>
 
                             {% if result.evidence %}
                                 <ul>
@@ -646,7 +666,7 @@
 
                     {% if result.metadata.assessment_scope %}
                         <div class="detail-block">
-                            <h4>Assessment Scope</h4>
+                            <h4>Scope</h4>
                             <p>
                                 {{ result.metadata.assessment_scope }}
                             </p>
@@ -656,26 +676,8 @@
             {% endfor %}
         </section>
 
-        <aside class="scope-notice">
-            <h2>Methodology and Scope Limitation</h2>
-
-            <p>{{ methodology_note }}</p>
-
-            <p>
-                <strong>Disclaimer:</strong>
-                {{ summary.disclaimer }}
-            </p>
-
-            <p>
-                The reported percentage is an internal,
-                researcher-defined coverage indicator for the four selected
-                controls. It is not an official ISO/IEC 27001 score or a
-                NIS2 compliance percentage.
-            </p>
-        </aside>
-
         <footer class="report-footer">
-            Generated by the AI-Assisted Compliance Assessment
+            Generated by the AI Assisted Compliance Assessment
             proof-of-concept.
         </footer>
 

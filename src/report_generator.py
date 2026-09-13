@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -292,7 +293,7 @@ def render_report_html(
     report_timestamp = (
         generated_at
         if generated_at is not None
-        else datetime.now(timezone.utc)
+        else datetime.now(ZoneInfo("Europe/Athens"))
     )
 
     if report_timestamp.tzinfo is None:
@@ -313,8 +314,8 @@ def render_report_html(
 
     template_context = {
         "report_title": (
-            "AI-Assisted Cybersecurity Compliance "
-            "Preliminary Assessment"
+            "AI Assisted Cybersecurity Compliance "
+            "Assessment"
         ),
         "organization": organization_metadata,
         "results": _serialize_results(normalized_results),
@@ -338,12 +339,7 @@ def render_report_html(
             "disclaimer": summary.disclaimer,
         },
         "generated_at": report_timestamp.strftime(
-            "%Y-%m-%d %H:%M:%S UTC"
-        ),
-        "methodology_note": (
-            "The control statuses were assigned by deterministic "
-            "prototype rules. The textual summary is explanatory only "
-            "and does not modify the underlying assessment."
+            "%Y-%m-%d %H:%M:%S %Z"
         ),
     }
 

@@ -160,6 +160,15 @@ def _missing_fields(
         if control.get(field) is None
     )
 
+def _format_gaps(gaps: list[str]) -> str:
+    """Format gap descriptions as a natural-language list."""
+    if len(gaps) == 1:
+        return gaps[0]
+
+    if len(gaps) == 2:
+        return f"{gaps[0]} and {gaps[1]}"
+
+    return f"{', '.join(gaps[:-1])}, and {gaps[-1]}"
 
 def _build_result(
     *,
@@ -290,7 +299,7 @@ def evaluate_mfa(
         status=ControlStatus.PARTIALLY_SATISFIED,
         rationale=(
             "MFA is implemented, but it does not cover all assessed areas. "
-            f"Coverage is missing for: {', '.join(uncovered_areas)}."
+            f"Coverage is missing for {' and '.join(uncovered_areas)}."
         ),
         recommendations=tuple(
             f"Extend MFA coverage to {area}."
@@ -442,7 +451,7 @@ def evaluate_backup(
         status=ControlStatus.PARTIALLY_SATISFIED,
         rationale=(
             "Backups are enabled, but the assessed backup process is "
-            f"incomplete: {'; '.join(gaps)}."
+            f"incomplete: {_format_gaps(gaps)}."
         ),
         recommendations=tuple(recommendations),
         evidence=evidence,
@@ -474,7 +483,7 @@ def evaluate_patch_management(
                 "does not have enough information about the organization's vulnerability management process."
             ),
             recommendations=(
-                "Confirm whether a documented patch-management process exists.",
+                "Confirm whether a documented vulnerability management process exists.",
                 "Document vulnerability identification and remediation practices.",
             ),
             evidence=evidence,
@@ -486,11 +495,11 @@ def evaluate_patch_management(
             control_data=control_data,
             status=ControlStatus.NOT_SATISFIED,
             rationale=(
-                "A defined vulnerability management process was explicitly reported "
+                "A defined vulnerability management process was reported "
                 "as absent."
             ),
             recommendations=(
-                "Establish a documented patch management process.",
+                "Establish a documented vulnerability management process.",
                 "Assign ownership and remediation timelines.",
                 "Introduce vulnerability scanning and patch status reviews.",
                 "Identify and replace unsupported software.",
@@ -555,7 +564,7 @@ def evaluate_patch_management(
             control_data=control_data,
             status=ControlStatus.SATISFIED,
             rationale=(
-                "A patch management process is defined, vulnerability "
+                "A vulnerability management process is defined, vulnerability "
                 "scanning is enabled, critical patches are targeted within "
                 f"{CRITICAL_PATCH_DEADLINE_DAYS} days, unsupported software "
                 "is not reported and patch status is reviewed."
@@ -610,8 +619,8 @@ def evaluate_patch_management(
         control_data=control_data,
         status=ControlStatus.PARTIALLY_SATISFIED,
         rationale=(
-            "A patch management process exists, but the assessed process "
-            f"contains gaps: {'; '.join(gaps)}."
+            "A vulnerability management process exists, but the assessed process "
+            f"contains gaps: {_format_gaps(gaps)}."
         ),
         recommendations=tuple(recommendations),
         evidence=evidence,
@@ -644,7 +653,7 @@ def evaluate_incident_response(
             status=ControlStatus.NOT_ASSESSABLE,
             rationale=(
                 "Incident response preparedness could not be assessed "
-                "because because the user does not have enough information"
+                "because the user does not have enough information "
                 "about the organization's incident response procedures."
             ),
             recommendations=(
@@ -778,7 +787,7 @@ def evaluate_incident_response(
         status=ControlStatus.PARTIALLY_SATISFIED,
         rationale=(
             "An incident response plan exists, but preparedness is "
-            f"incomplete: {'; '.join(gaps)}."
+            f"incomplete: {_format_gaps(gaps)}."
         ),
         recommendations=tuple(recommendations),
         evidence=evidence,

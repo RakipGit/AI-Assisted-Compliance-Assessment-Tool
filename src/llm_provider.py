@@ -7,9 +7,8 @@ from typing import Any
 
 
 DEFAULT_OPENAI_MODEL = "gpt-5-mini"
-DEFAULT_MAX_OUTPUT_TOKENS = 4000
+DEFAULT_MAX_OUTPUT_TOKENS = 1500
 DEFAULT_TIMEOUT_SECONDS = 30.0
-
 
 class LLMProviderError(RuntimeError):
     """Raised when the external LLM provider cannot return valid text."""

@@ -57,6 +57,7 @@ The tool follows a structured assessment workflow that separates user input, det
 7. **Results and Reporting**  
    The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation(Overview, Management Interpretation, Priority Actions ,Information Gaps) .
 
+![Assessment Architecture](images/arch-eng.png)
 
 ---
 

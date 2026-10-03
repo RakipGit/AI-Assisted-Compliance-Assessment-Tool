@@ -1,3 +1,5 @@
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
 ![Status](https://img.shields.io/badge/status-complete-brightgreen)
 
 # AI Assisted Compliance Assessment Tool

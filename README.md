@@ -1,9 +1,8 @@
 ![Status](https://img.shields.io/badge/status-complete-brightgreen)
 
-# AI-Assisted Compliance Assessment Tool
+# AI Assisted Compliance Assessment Tool
 
-A Python and Streamlit Proof of Concept (PoC) tool for the preliminary assessment of selected cybersecurity controls mapped to **ISO/IEC 27001:2022** and the **NIS2 Directive**, with AI-assisted interpretation of the assessment results.
-
+A Proof of Concept (PoC) cybersecurity compliance assessment tool based on selected controls mapped to ISO/IEC 27001:2022 and the NIS2 Directive, with AI assisted interpretation of the results.
 ---
 
 ## Project Summary

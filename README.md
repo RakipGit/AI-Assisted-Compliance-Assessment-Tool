@@ -272,10 +272,11 @@ The scoring model and selected evaluation thresholds are prototype design decisi
 
 ## Copyright Notice
 
-All source code, project documentation, screenshots, and original material in this repository were created for this project and may not be reused without permission.
+All content and visuals in this repository are original and may not be reused without permission.
+
+
+## Rakip 
+
+ICT Engineering | Cybersecurity & Network Security
 
 ---
-
-## Rakip
-
-ICT Engineering | Cybersecurity

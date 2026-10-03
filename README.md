@@ -3,6 +3,7 @@
 # AI Assisted Compliance Assessment Tool
 
 A Proof of Concept (PoC) cybersecurity compliance assessment tool based on selected controls mapped to ISO/IEC 27001:2022 and the NIS2 Directive, with AI assisted interpretation of the results.
+
 ---
 
 ## Project Summary
@@ -21,6 +22,7 @@ The tool evaluates four selected cybersecurity control areas through predefined 
 | Backup and Restore Testing | A.8.13 – Information backup | Article 21(2)(c) |
 | Vulnerability Management | A.8.8 – Management of technical vulnerabilities | Article 21(2)(e) |
 | Incident Response Planning and Preparedness | A.5.24, A.5.26 | Article 21(2)(b) |
+
 
 ---
 

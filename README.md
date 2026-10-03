@@ -10,7 +10,7 @@ A Proof of Concept (PoC) cybersecurity compliance assessment tool based on selec
 
 This project was developed as the practical implementation of my diploma thesis on the use of artificial intelligence to support cybersecurity compliance assessments. The tool evaluates four selected cybersecurity control areas through predefined deterministic rules, with each control mapped to relevant requirements of ISO/IEC 27001:2022 and NIS2. 
 
-Based on the information provided by the user, each control is assigned one of four assessment statuses: Satisfied, Partially Satisfied, Not Satisfied, or Not Assessable. The assessment results are then used to calculate a coverage score for the selected controls. Artificial intelligence is used only after the deterministic assessment has been completed. Its role is to interpret the existing findings and generate a structured Executive Explanation without changing the underlying control statuses, scores, or framework mappings. The final results are presented through the Streamlit interface and can also be exported as a standalone HTML report.
+Based on the information provided by the user, each control is assigned one of four assessment statuses: Satisfied, Partially Satisfied, Not Satisfied, or Not Assessable. The assessment results are then used to calculate a coverage score for the selected controls. Artificial intelligence's role is to interpret the existing findings and generate a structured Executive Explanation without changing the underlying control statuses, scores, or framework mappings. The final results are presented through the Streamlit interface and can also be exported as a standalone HTML report.
 
 ---
 

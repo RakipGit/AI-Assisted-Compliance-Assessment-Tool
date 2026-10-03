@@ -28,18 +28,37 @@ Based on the information provided by the user, each control is assigned one of f
 
 ---
 
-Each control is assigned one of four possible assessment statuses:
+## Architecture & Assessment Workflow
 
-- **Satisfied**
-- **Partially Satisfied**
-- **Not Satisfied**
-- **Not Assessable**
+The tool follows a structured assessment workflow that separates user input, deterministic evaluation, scoring, AI-assisted interpretation, and reporting.
 
-A scoring component calculates a coverage percentage based only on the controls that can be assessed. Controls marked as **Not Assessable** are excluded from the scoring denominator because they represent insufficient information rather than confirmed control failure.
+1. **Organization Profile**  
+   The user enters basic organization information such as name, size, number of employees, and sector.
 
-Artificial intelligence is used only after the deterministic assessment has been completed. Its role is to interpret and present the existing results through a structured Executive Explanation without determining or modifying the underlying control statuses, scores, or framework mappings.
+2. **Security Control Assessment**  
+   The user provides information for the four selected control areas:
+   - Multi-Factor Authentication
+   - Backup and Restore Testing
+   - Vulnerability Management
+   - Incident Response Planning and Preparedness
 
-The completed assessment can also be exported as a standalone HTML report.
+3. **Input Validation**  
+   The submitted information is validated before being processed by the assessment engine.
+
+4. **Deterministic Evaluation**  
+   Predefined rules evaluate each security control and assign the appropriate assessment status.
+
+5. **Scoring and Framework Mapping**  
+   The assessment results are used to calculate the selected-controls coverage score, while each control is associated with its relevant ISO/IEC 27001:2022 and NIS2 requirements.
+
+6. **AI-Assisted Interpretation**  
+   The completed assessment findings are provided to the AI layer, which generates a structured Executive Explanation of the results.
+
+7. **Results and Reporting**  
+   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation.
+
+
+---
 
 ## How It Works
 

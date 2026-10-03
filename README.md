@@ -7,9 +7,22 @@ A Proof of Concept (PoC) cybersecurity compliance assessment tool based on selec
 
 ## Project Summary
 
-This project was developed as the practical implementation of my diploma thesis on the use of artificial intelligence to support cybersecurity compliance assessment.
+This project was developed as the practical implementation of my diploma thesis on the use of artificial intelligence to support cybersecurity compliance assessments.
 
-The tool evaluates four selected cybersecurity control areas through predefined deterministic rules and maps the assessment results to relevant requirements of **ISO/IEC 27001:2022** and **NIS2**.
+The tool evaluates four selected cybersecurity control areas through predefined deterministic rules, with each control mapped to relevant requirements of ISO/IEC 27001:2022 and NIS2.
+
+---
+
+## Security Controls Assessed
+
+| Security Control | ISO/IEC 27001:2022 | NIS2 |
+|---|---|---|
+| Multi-Factor Authentication | A.8.5 – Secure authentication | Article 21(2)(j) |
+| Backup and Restore Testing | A.8.13 – Information backup | Article 21(2)(c) |
+| Vulnerability Management | A.8.8 – Management of technical vulnerabilities | Article 21(2)(e) |
+| Incident Response Planning and Preparedness | A.5.24, A.5.26 | Article 21(2)(b) |
+
+---
 
 Each control is assigned one of four possible assessment statuses:
 

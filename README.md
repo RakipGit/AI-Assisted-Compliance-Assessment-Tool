@@ -39,21 +39,6 @@ Artificial intelligence is used only after the deterministic assessment has been
 
 The completed assessment can also be exported as a standalone HTML report.
 
----
-
-## Security Controls Assessed
-
-| Security Control | ISO/IEC 27001:2022 | NIS2 |
-|---|---|---|
-| Multi-Factor Authentication | A.8.5 – Secure authentication | Article 21(2)(j) |
-| Backup and Restore Testing | A.8.13 – Information backup | Article 21(2)(c) |
-| Vulnerability Management | A.8.8 – Management of technical vulnerabilities | Article 21(2)(e) |
-| Incident Response Planning and Preparedness | A.5.24, A.5.26 | Article 21(2)(b) |
-
-The mappings represent the interpretation adopted by this Proof of Concept and do not constitute an official ISO/IEC 27001–NIS2 crosswalk.
-
----
-
 ## How It Works
 
 The assessment follows the following processing flow:

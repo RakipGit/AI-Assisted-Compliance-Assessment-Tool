@@ -51,11 +51,11 @@ The tool follows a structured assessment workflow that separates user input, det
 5. **Scoring and Framework Mapping**  
    The assessment results are used to calculate the selected-controls coverage score, while each control is associated with its relevant ISO/IEC 27001:2022 and NIS2 requirements.
 
-6. **AI-Assisted Interpretation**  
+6. **AI Interpretation**  
    The completed assessment findings are provided to the AI layer, which generates a structured Executive Explanation of the results.
 
 7. **Results and Reporting**  
-   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation.
+   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation(Overview, Management Interpretation, Priority Actions ,Information Gaps) .
 
 
 ---

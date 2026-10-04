@@ -84,8 +84,6 @@ The first thesis evaluation scenario produced the following results:
 - Vulnerability Management - Not Satisfied
 - Incident Response - Assessable
 
-The Not Assessable control was excluded from the scoring denominator, resulting in a selected-controls coverage score of **50%**.
-
 -> Scenario 2 (Satisfied Controls)
 
 The second thesis evaluation scenario resulted in all four selected controls being assessed as Satisfied.

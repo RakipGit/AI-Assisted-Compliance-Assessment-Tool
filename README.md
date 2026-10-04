@@ -103,7 +103,7 @@ The following screenshots show the assessment output generated for these two sce
 <summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
 
-### Scenario 1 – Organization Profile
+#### Scenario 1 – Organization Profile
 ![Assessment Interface](images/Indigo.png)
 
 ### MFA
@@ -130,6 +130,18 @@ The following screenshots show the assessment output generated for these two sce
 
 ### Incident Response Result 
 ![HTML Report](images/IR-Result.png)
+
+### Download HTML Report
+![HTML Report](images/HTML.png)
+
+### Download HTML Report
+![HTML Report](images/ex1.png)
+
+### Download HTML Report
+![HTML Report](images/ex2.png)
+
+
+
 </details>
 
 ## Tools & Technologies

@@ -185,17 +185,35 @@ The following screenshots show the assessment output generated for these two sce
 - Git & GitHub
 - Visual Studio Code
 
+----
+
+## Scope and Limitations
+
+This project is a **Proof of Concept** and evaluates only four selected cybersecurity control areas.
+
+The tool does not provide:
+
+- ISO/IEC 27001 certification
+- official NIS2 compliance confirmation
+- audit assurance
+- legal advice
+- a complete assessment of an organization's cybersecurity posture
+
+The assessment is based on user-provided information and does not independently verify supporting evidence.
+
+The scoring model and selected evaluation thresholds are prototype design decisions and must not be interpreted as official ISO/IEC 27001 or NIS2 compliance metrics.
+
 ---
 
-### Main Components
+## Insights & Lessons Learned
 
-- `data/` – JSON Schema, framework mappings, synthetic scenarios, and expected deterministic results
-- `docs/` – architecture and technical design decisions
-- `images/` – application and assessment screenshots
-- `src/` – deterministic assessment logic, scoring, AI integration, validation, and reporting
-- `templates/` – HTML report template
-- `tests/` – automated test suite
-- `app.py` – Streamlit application entry point
+- Separating deterministic assessment logic from AI-generated explanations improves reproducibility and transparency.
+- AI can support the interpretation of cybersecurity compliance results without being responsible for the underlying assessment decision.
+- Missing information should be distinguished from confirmed control failure, which led to the use of the **Not Assessable** status.
+- Mapping related security controls between ISO/IEC 27001 and NIS2 helps demonstrate how common security practices can support requirements across different frameworks.
+- Structured input validation is important before assessment logic is executed.
+- Automated testing helps verify that rule evaluation, scoring, result integrity, and report generation behave consistently.
+- A modular architecture makes it easier to separate validation, assessment, scoring, AI interpretation, and reporting responsibilities.
 
 ---
 
@@ -228,36 +246,6 @@ Run the Streamlit application:
 ```bash
 streamlit run app.py
 ```
-
----
-
-## Scope and Limitations
-
-This project is a **Proof of Concept** and evaluates only four selected cybersecurity control areas.
-
-The tool does not provide:
-
-- ISO/IEC 27001 certification
-- official NIS2 compliance confirmation
-- audit assurance
-- legal advice
-- a complete assessment of an organization's cybersecurity posture
-
-The assessment is based on user-provided information and does not independently verify supporting evidence.
-
-The scoring model and selected evaluation thresholds are prototype design decisions and must not be interpreted as official ISO/IEC 27001 or NIS2 compliance metrics.
-
----
-
-## Insights & Lessons Learned
-
-- Separating deterministic assessment logic from AI-generated explanations improves reproducibility and transparency.
-- AI can support the interpretation of cybersecurity compliance results without being responsible for the underlying assessment decision.
-- Missing information should be distinguished from confirmed control failure, which led to the use of the **Not Assessable** status.
-- Mapping related security controls between ISO/IEC 27001 and NIS2 helps demonstrate how common security practices can support requirements across different frameworks.
-- Structured input validation is important before assessment logic is executed.
-- Automated testing helps verify that rule evaluation, scoring, result integrity, and report generation behave consistently.
-- A modular architecture makes it easier to separate validation, assessment, scoring, AI interpretation, and reporting responsibilities.
 
 ---
 

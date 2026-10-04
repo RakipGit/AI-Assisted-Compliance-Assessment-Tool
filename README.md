@@ -134,7 +134,7 @@ The following screenshots show the assessment output generated for these two sce
 #### Download HTML Report
 ![HTML Report](images/HTML.png)
 
-#### Executive Explanation (AI). Only the Executive Explanation from the Scenario 1 HTML report is shown here, as the assessment summary and detailed control results have already been presented above. The complete HTML report structure is shown in Scenario 2.
+#### Only the Executive Explanation from the Scenario 1 HTML report is shown here, as the assessment summary and detailed control results have already been presented above. The complete HTML report structure is shown in Scenario 2.
 ![HTML Report](images/ex1.png)
 
 #### Priority actions and Information gaps

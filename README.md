@@ -170,7 +170,7 @@ The following screenshots show the assessment output generated for these two sce
 
 ---
 
-##Result Overview 
+## Result Overview 
 
 1st Scenario: The first scenario confirmed that the assessment mechanism handled different control conditions as expected. The four controls produced all four possible assessment statuses, while the Incident Response control was correctly excluded from the score because it was marked as Not Assessable. The AI generated Executive Explanation also reflected the mixed assessment by identifying both satisfied controls and areas requiring improvement, while highlighting the missing incident response information.
 
@@ -194,8 +194,7 @@ The following screenshots show the assessment output generated for these two sce
 - Comparing ISO/IEC 27001:2022 controls with the NIS2 requirements helped me understand how different cybersecurity frameworks can address similar security objectives through different structures and terminology.
 - Mapping the four selected security controls to both ISO/IEC 27001:2022 and NIS2 showed me the importance of creating a clear and structured relationship between security practices and the requirements they support.
 - Researching the selected security controls helped me understand in greater depth how MFA, backup and restore testing, vulnerability management, and incident response work, what is required for them to be implemented effectively, and how they support an organization’s overall security posture.
-- Integrating AI into the assessment workflow showed me how structured cybersecurity findings can be transformed into clearer management and technical explanations that are easier to understand and act on.
-- Integrating AI into the assessment process helped me understand how artificial intelligence can support cybersecurity compliance by interpreting structured findings and presenting them in clearer management and technical language.
+- Integrating AI into the assessment workflow helped me understand how artificial intelligence can support cybersecurity compliance by interpreting structured findings and transforming them into clearer management and technical explanations.
 - Developing the application gave me practical experience in building a complete cybersecurity assessment tool with Python, Streamlit, and HTML, from user input and evaluation logic to reporting and final presentation
 
 ---

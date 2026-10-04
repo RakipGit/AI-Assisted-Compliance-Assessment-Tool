@@ -152,14 +152,15 @@ The following screenshots show the assessment output generated for these two sce
 ![Assessment Summary](images/backup2.png)
 
 #### Vulnerability Management
-![Detailed Results](images/vm2.png)
+![Detailed Results](images/vm2(2.1).png)
 
 #### Incident Response
-![Assessment Summary](images/ir2.png)
+![Assessment Summary](images/ir2(2.1).png)
 
 #### Scenario 2 full HTML report
 ![Assessment Summary](images/html1.png)
 ![Assessment Summary](images/sc2-full-repo.png)
+
 ![Assessment Summary](images/mfa2.png)
 ![Assessment Summary](images/back2.png)
 ![Assessment Summary](images/vm2.png)

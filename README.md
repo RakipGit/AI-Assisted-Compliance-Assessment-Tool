@@ -2,7 +2,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
 
 
-## AI Assisted Compliance Assessment Tool
+# AI Assisted Compliance Assessment Tool
 
 A Proof of Concept (PoC) cybersecurity compliance assessment tool based on selected controls mapped to ISO/IEC 27001:2022 and the NIS2 Directive, with AI assisted interpretation of the results.
 
@@ -51,7 +51,7 @@ The tool follows a structured assessment workflow that separates user input, det
    The completed assessment findings are provided to the AI layer, which generates a structured Executive Explanation of the results.
 
 7. **Results and Reporting**  
-   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation (Overview, Management Interpretation, Priority Actions ,Information Gaps).
+   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation (Overview, Management Interpretation, Priority Actions, Information Gaps).
 
 ![Assessment Architecture](images/arch-english.png)
 
@@ -82,7 +82,7 @@ The first thesis evaluation scenario produced the following results:
 - Multi-Factor Authentication - Satisfied
 - Backup and Restore Testing - Partially Satisfied
 - Vulnerability Management - Not Satisfied
-- Incident Response - Assessable
+- Incident Response - Not Assessable
 
 -> Scenario 2 (Satisfied Controls)
 
@@ -100,7 +100,7 @@ The following screenshots show the assessment output generated for these two sce
 
 <details>
    
-<summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
+<summary>🔎 View Assessment Walkthrough (Screenshots)</summary>
 
 
 ### Scenario 1 – Organization Profile
@@ -174,7 +174,7 @@ The following screenshots show the assessment output generated for these two sce
 
 1st Scenario: The first scenario confirmed that the assessment mechanism handled different control conditions as expected. The four controls produced all four possible assessment statuses, while the Incident Response control was correctly excluded from the score because it was marked as Not Assessable. The AI generated Executive Explanation also reflected the mixed assessment by identifying both satisfied controls and areas requiring improvement, while highlighting the missing incident response information.
 
-2ond Scenario: The second scenario confirmed that the tool also handles fully satisfied assessments correctly. All four controls met the predefined criteria, resulting in a 100% score. The Executive Explanation focused on maintaining the existing security measures and did not include an Information Gap section because no assessment information was missing.
+2nd Scenario: The second scenario confirmed that the tool also handles fully satisfied assessments correctly. All four controls met the predefined criteria, resulting in a 100% score. The Executive Explanation focused on maintaining the existing security measures and did not include an Information Gap section because no assessment information was missing.
 
 ---
 
@@ -223,8 +223,6 @@ Clone the repository:
 git clone https://github.com/RakipGit/AI-Assisted-Compliance-Assessment-Tool.git
 cd AI-Assisted-Compliance-Assessment-Tool
 ```
-
-Create and activate a Python virtual environment.
 
 Install the required dependencies:
 

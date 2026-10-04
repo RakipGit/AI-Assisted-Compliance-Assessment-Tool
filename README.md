@@ -30,17 +30,13 @@ Based on the information provided by the user, each control is assigned one of f
 
 ## Architecture & Assessment Workflow
 
-The tool follows a structured assessment workflow that separates user input, deterministic evaluation, scoring, AI-assisted interpretation, and reporting.
+The tool follows a structured assessment workflow that separates user input, deterministic evaluation, scoring, AI assisted interpretation and reporting.
 
 1. **Organization Profile**  
-   The user enters basic organization information such as name, size, number of employees, and sector.
+   The user enters basic organization information such as name, size, number of employees and sector.
 
 2. **Security Control Assessment**  
-   The user provides information for the four selected control areas:
-   - Multi-Factor Authentication
-   - Backup and Restore Testing
-   - Vulnerability Management
-   - Incident Response Planning and Preparedness
+   The user provides information for the four selected control areas: Multi-Factor Authentication, Backup and Restore Testing,  Vulnerability Management and Incident Response Planning and Preparedness.
 
 3. **Input Validation**  
    The submitted information is validated before being processed by the assessment engine.
@@ -49,59 +45,37 @@ The tool follows a structured assessment workflow that separates user input, det
    Predefined rules evaluate each security control and assign the appropriate assessment status.
 
 5. **Scoring and Framework Mapping**  
-   The assessment results are used to calculate the selected-controls coverage score, while each control is associated with its relevant ISO/IEC 27001:2022 and NIS2 requirements.
+   The assessment results are used to calculate the selected controls coverage score, while each control is associated with its relevant ISO/IEC 27001:2022 and NIS2 requirements.
 
 6. **AI Interpretation**  
    The completed assessment findings are provided to the AI layer, which generates a structured Executive Explanation of the results.
 
 7. **Results and Reporting**  
-   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation(Overview, Management Interpretation, Priority Actions ,Information Gaps) .
+   The application presents the assessment results through the Streamlit interface and generates a downloadable HTML report containing the detailed control findings, framework mappings, recommendations, evidence observations, and Executive Explanation (Overview, Management Interpretation, Priority Actions ,Information Gaps).
 
 ![Assessment Architecture](images/arch-english.png)
 
 ---
 
-## How It Works
-
-The assessment follows the following processing flow:
-
-1. Organization and security-control information is entered through the Streamlit interface.
-2. Input data is validated against a predefined JSON Schema.
-3. The deterministic rule engine evaluates the four selected security controls.
-4. Each control receives an assessment status.
-5. The scoring component calculates the selected-controls coverage percentage.
-6. Relevant ISO/IEC 27001 and NIS2 mappings are attached to the results.
-7. The completed deterministic assessment is passed to the AI explanation layer.
-8. AI generates a structured Executive Explanation based on the existing results.
-9. The final assessment can be exported as an HTML report.
-
-**Assessment decisions are made by deterministic rules rather than by the language model.**
-
----
-
 ## What I Implemented
 
-- Built the application interface using **Streamlit**
-- Created structured organization and security-control assessment forms
-- Implemented **JSON Schema validation**
-- Developed a deterministic rule engine for four cybersecurity control areas
-- Implemented four assessment outcomes:
-  - Satisfied
-  - Partially Satisfied
-  - Not Satisfied
-  - Not Assessable
-- Created a scoring mechanism that excludes Not Assessable controls from the denominator
-- Created predefined mappings between selected **ISO/IEC 27001:2022** controls and **NIS2 Article 21** requirements
-- Implemented control-specific rationales, recommendations, and evidence observations
-- Integrated the **OpenAI API** for AI-assisted interpretation of assessment results
-- Restricted AI to the explanation layer rather than the assessment decision process
-- Added integrity checks around the deterministic assessment results
-- Developed standalone HTML report generation using **Jinja2**
-- Implemented automated tests for validation, rule evaluation, scoring, AI-result integrity, and report generation
+- Built the Python application in Visual Studio Code using Streamlit (app.py)
+- Created structured organization and security control assessment forms (app.py, form_adapter.py)
+- Implemented input validation to verify the submitted organization and security control data before assessment (validator.py, organization_schema.json)
+- Developed a deterministic rule engine for the four cybersecurity control areas (rule_engine.py)
+- Created a scoring mechanism that excludes Not Assessable controls from the denominator (scoring.py)
+- Created predefined mappings between selected **ISO/IEC 27001:2022** controls and **NIS2 Article 21** requirements (control_catalogue.json)
+- Integrated the OpenAI API for AI interpretation of assessment results (llm_provider.py)
+- Added safeguards to keep the deterministic assessment results unchanged during AI summary generation (ai_summary.py)
+- Developed standalone HTML report generation using Jinja2 (report_generator.py, report_template.html)
+- Implemented automated tests for validation, rule evaluation, scoring, AI result integrity, and report generation (tests/)
 
 ---
 
 ## Screenshots
+
+<details>
+<summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
 ### Assessment Interface
 
@@ -129,6 +103,7 @@ The assessment follows the following processing flow:
 
 🔎 Additional screenshots from the thesis evaluation scenarios are available in the [`images`](images/) folder.
 
+</details>
 ---
 
 ## Example Assessment Scenarios

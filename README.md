@@ -103,42 +103,61 @@ The following screenshots show the assessment output generated for these two sce
 <summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
 
-#### Scenario 1 – Organization Profile
+### Scenario 1 – Organization Profile
 ![Assessment Interface](images/Indigo.png)
 
-### MFA
+#### MFA
 ![Security Controls](images/MFA.png)
 
-### Backup
+#### Backup
 ![Assessment Summary](images/Backup.png)
 
-### Vulnerability Management and Incident Response
+#### Vulnerability Management and Incident Response
 ![Detailed Results](images/VM-IR-RUN.png)
 
-### Assessment Result 
+#### Assessment Result 
 ![Executive Explanation](images/Result1.png)
 ![Executive Explanation](images/Result2.png)
 
-### MFA Result 
+#### MFA Result 
 ![HTML Report](images/MFA-Result.png)
 
-### Backup Result 
+#### Backup Result 
 ![HTML Report](images/Backup-Result.png)
 
-### Vulnerability Management Result 
+#### Vulnerability Management Result 
 ![HTML Report](images/VM-Result.png)
 
-### Incident Response Result 
+#### Incident Response Result 
 ![HTML Report](images/IR-Result.png)
 
-### Download HTML Report
+#### Download HTML Report
 ![HTML Report](images/HTML.png)
 
-### Executive Explanation (AI). Only the Executive Explanation from the Scenario 1 HTML report is shown here, as the assessment summary and detailed control results have already been presented above. The complete HTML report structure is shown in Scenario 2.
+#### Executive Explanation (AI). Only the Executive Explanation from the Scenario 1 HTML report is shown here, as the assessment summary and detailed control results have already been presented above. The complete HTML report structure is shown in Scenario 2.
 ![HTML Report](images/ex1.png)
 
-### Priority actions and Information gaps
+#### Priority actions and Information gaps
 ![HTML Report](images/ex2.png)
+
+------------------------------------ 
+
+### Scenario 2 – Organization Profile
+![Assessment Interface](images/orgprofile(1).png)
+
+#### MFA
+![Security Controls](images/Mfa2.png)
+
+#### Backup
+![Assessment Summary](images/backup2.png)
+
+#### Vulnerability Management
+![Detailed Results](images/vm2.png)
+
+#### Incident Response
+![Assessment Summary](images/ir2.png)
+
+
 
 
 

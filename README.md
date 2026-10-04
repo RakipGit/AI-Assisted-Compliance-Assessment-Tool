@@ -21,9 +21,9 @@ Based on the information provided by the user, each control is assigned one of f
 | Security Control | ISO/IEC 27001:2022 | NIS2 |
 |---|---|---|
 | Multi-Factor Authentication | A.8.5 – Secure authentication | Article 21(2)(j) |
-| Backup and Restore Testing | A.8.13 – Information backup | Article 21(2)(c) |
+| Backup | A.8.13 – Information backup | Article 21(2)(c) |
 | Vulnerability Management | A.8.8 – Management of technical vulnerabilities | Article 21(2)(e) |
-| Incident Response Planning and Preparedness | A.5.24, A.5.26 | Article 21(2)(b) |
+| Incident Response | A.5.24, A.5.26 | Article 21(2)(b) |
 
 
 ---
@@ -36,7 +36,7 @@ The tool follows a structured assessment workflow that separates user input, det
    The user enters basic organization information such as name, size, number of employees and sector.
 
 2. **Security Control Assessment**  
-   The user provides information for the four selected control areas: Multi-Factor Authentication, Backup and Restore Testing,  Vulnerability Management and Incident Response Planning and Preparedness.
+   The user provides information for the four selected control areas: Multi-Factor Authentication, Backup,  Vulnerability Management and Incident Response.
 
 3. **Input Validation**  
    The submitted information is validated before being processed by the assessment engine.

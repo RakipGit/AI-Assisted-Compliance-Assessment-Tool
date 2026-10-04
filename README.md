@@ -166,30 +166,41 @@ The following screenshots show the assessment output generated for these two sce
 ![Assessment Summary](images/vm2.png)
 ![Assessment Summary](images/inc2.png)
 
-
-
-
-
 </details>
+
+---
+
+##Result Overview 
+
+1st Scenario: The first scenario confirmed that the assessment mechanism handled different control conditions as expected. The four controls produced all four possible assessment statuses, while the Incident Response control was correctly excluded from the score because it was marked as Not Assessable. The AI generated Executive Explanation also reflected the mixed assessment by identifying both satisfied controls and areas requiring improvement, while highlighting the missing incident response information.
+
+2ond Scenario: The second scenario confirmed that the tool also handles fully satisfied assessments correctly. All four controls met the predefined criteria, resulting in a 100% score. The Executive Explanation focused on maintaining the existing security measures and did not include an Information Gap section because no assessment information was missing.
+
+---
 
 ## Tools & Technologies
 
+- Visual Studio Code
 - Python
 - Streamlit
 - OpenAI API
-- JSON Schema
-- Jinja2
-- pandas
-- pytest
 - HTML / CSS
-- Git & GitHub
-- Visual Studio Code
+- Git and GitHub
 
-----
+---
 
-## Scope and Limitations
+## Insights & Lessons Learned
 
-This project is a **Proof of Concept** and evaluates only four selected cybersecurity control areas.
+- Comparing ISO/IEC 27001:2022 controls with the NIS2 requirements helped me understand how different cybersecurity frameworks can address similar security objectives through different structures and terminology.
+- Mapping the four selected security controls to both ISO/IEC 27001:2022 and NIS2 showed me the importance of creating a clear and structured relationship between security practices and the requirements they support.
+- Researching the selected security controls helped me understand in greater depth how MFA, backup and restore testing, vulnerability management, and incident response work, what is required for them to be implemented effectively, and how they support an organization’s overall security posture.
+- Integrating AI into the assessment workflow showed me how structured cybersecurity findings can be transformed into clearer management and technical explanations that are easier to understand and act on.
+- Integrating AI into the assessment process helped me understand how artificial intelligence can support cybersecurity compliance by interpreting structured findings and presenting them in clearer management and technical language.
+- Developing the application gave me practical experience in building a complete cybersecurity assessment tool with Python, Streamlit, and HTML, from user input and evaluation logic to reporting and final presentation
+
+---
+
+## Limitations
 
 The tool does not provide:
 
@@ -199,21 +210,9 @@ The tool does not provide:
 - legal advice
 - a complete assessment of an organization's cybersecurity posture
 
-The assessment is based on user-provided information and does not independently verify supporting evidence.
+The assessment is based on user provided information and does not independently verify supporting evidence.
 
 The scoring model and selected evaluation thresholds are prototype design decisions and must not be interpreted as official ISO/IEC 27001 or NIS2 compliance metrics.
-
----
-
-## Insights & Lessons Learned
-
-- Separating deterministic assessment logic from AI-generated explanations improves reproducibility and transparency.
-- AI can support the interpretation of cybersecurity compliance results without being responsible for the underlying assessment decision.
-- Missing information should be distinguished from confirmed control failure, which led to the use of the **Not Assessable** status.
-- Mapping related security controls between ISO/IEC 27001 and NIS2 helps demonstrate how common security practices can support requirements across different frameworks.
-- Structured input validation is important before assessment logic is executed.
-- Automated testing helps verify that rule evaluation, scoring, result integrity, and report generation behave consistently.
-- A modular architecture makes it easier to separate validation, assessment, scoring, AI interpretation, and reporting responsibilities.
 
 ---
 

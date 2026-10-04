@@ -95,6 +95,7 @@ The second thesis evaluation scenario resulted in all four selected controls bei
 - 100% selected controls coverage
 
 The following screenshots show the assessment output generated for these two scenarios.
+
 ---
 
 ## Screenshots

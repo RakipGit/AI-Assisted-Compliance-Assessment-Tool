@@ -99,9 +99,11 @@ The following screenshots show the assessment output generated for these two sce
 ## Screenshots
 
 <details>
+   
 <summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
-Scenario 1 – Organization Profile
+
+# Scenario 1 – Organization Profile
 
 ![Assessment Interface](images/Indigo.png)
 
@@ -125,10 +127,8 @@ Scenario 1 – Organization Profile
 
 ![HTML Report](images/html-report.png)
 
-🔎 Additional screenshots from the thesis evaluation scenarios are available in the [`images`](images/) folder.
 
 </details>
----
 
 ## Tools & Technologies
 

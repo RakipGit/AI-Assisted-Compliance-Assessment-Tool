@@ -102,7 +102,8 @@ The following screenshots show the assessment output generated for these two sce
 <summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
 Scenario 1 – Organization Profile
-![Assessment Interface](images/Indigo.png.png)
+
+![Assessment Interface](images/Indigo.png)
 
 ### Security Control Assessment
 

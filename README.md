@@ -104,30 +104,32 @@ The following screenshots show the assessment output generated for these two sce
 
 
 ### Scenario 1 – Organization Profile
-
 ![Assessment Interface](images/Indigo.png)
 
 ### MFA
-
 ![Security Controls](images/MFA.png)
 
 ### Backup
-
 ![Assessment Summary](images/Backup.png)
 
 ### Vulnerability Management and Incident Response
-
 ![Detailed Results](images/VM-IR-RUN.png)
 
-### Executive Explanation
+### Assessment Result 
+![Executive Explanation](images/Result1.png)
+![Executive Explanation](images/Result2.png)
 
-![Executive Explanation](images/executive-explanation.png)
+### MFA Result 
+![HTML Report](images/MFA-Result.png)
 
-### HTML Assessment Report
+### Backup Result 
+![HTML Report](images/Backup-Result.png)
 
-![HTML Report](images/html-report.png)
+### Vulnerability Management Result 
+![HTML Report](images/VM-Result.png)
 
-
+### Incident Response Result 
+![HTML Report](images/IR-Result.png)
 </details>
 
 ## Tools & Technologies

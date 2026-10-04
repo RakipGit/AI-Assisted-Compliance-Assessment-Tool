@@ -55,7 +55,6 @@ The tool follows a structured assessment workflow that separates user input, det
 
 ![Assessment Architecture](images/arch-english.png)
 
----
 
 ## What I Implemented
 

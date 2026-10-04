@@ -75,7 +75,7 @@ The tool follows a structured assessment workflow that separates user input, det
 
 To evaluate how the tool behaves under different conditions, two synthetic organization scenarios were created and assessed. The first scenario represents a mixed security situation, with controls producing different assessment outcomes, allowing the rule engine, scoring mechanism, Not Assessable handling and AI explanation to be tested together. The second scenario represents an organization in which all four selected controls satisfy the predefined assessment criteria, demonstrating that the tool can also correctly identify and report a fully satisfied assessment rather than focusing only on gaps and remediation needs.
 
---> Scenario 1 – Mixed Assessment
+-> Scenario 1 (Mixed Assessment)
 
 The first thesis evaluation scenario produced the following results:
 
@@ -86,7 +86,7 @@ The first thesis evaluation scenario produced the following results:
 
 The Not Assessable control was excluded from the scoring denominator, resulting in a selected-controls coverage score of **50%**.
 
---> Scenario 2 – Satisfied Controls
+-> Scenario 2 (Satisfied Controls)
 
 The second thesis evaluation scenario resulted in all four selected controls being assessed as Satisfied.
 

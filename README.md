@@ -2,7 +2,7 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
 
 
-# AI Assisted Compliance Assessment Tool
+## AI Assisted Compliance Assessment Tool
 
 A Proof of Concept (PoC) cybersecurity compliance assessment tool based on selected controls mapped to ISO/IEC 27001:2022 and the NIS2 Directive, with AI assisted interpretation of the results.
 
@@ -103,7 +103,7 @@ The following screenshots show the assessment output generated for these two sce
 <summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
 
-# Scenario 1 – Organization Profile
+### Scenario 1 – Organization Profile
 
 ![Assessment Interface](images/Indigo.png)
 

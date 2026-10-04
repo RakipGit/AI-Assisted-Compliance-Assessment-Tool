@@ -107,17 +107,17 @@ The following screenshots show the assessment output generated for these two sce
 
 ![Assessment Interface](images/Indigo.png)
 
-### Security Control Assessment
+### MFA
 
-![Security Controls](images/security-controls.png)
+![Security Controls](images/MFA.png)
 
-### Assessment Summary
+### Backup
 
-![Assessment Summary](images/assessment-summary.png)
+![Assessment Summary](images/Backup.png)
 
-### Detailed Control Results
+### Vulnerability Management and Incident Response
 
-![Detailed Results](images/detailed-results.png)
+![Detailed Results](images/VM-IR-RUN.png)
 
 ### Executive Explanation
 

@@ -101,9 +101,8 @@ The following screenshots show the assessment output generated for these two sce
 <details>
 <summary>🔎 View Full Lab Walkthrough (Screenshots)</summary>
 
-### Assessment Interface
-
-![Assessment Interface](images/assessment-interface.png)
+Scenario 1 – Organization Profile
+![Assessment Interface](images/Indigo.png.png)
 
 ### Security Control Assessment
 
@@ -144,51 +143,6 @@ The following screenshots show the assessment output generated for these two sce
 - Visual Studio Code
 
 ---
-
-## Project Structure
-
-```text
-AI-Assisted-Compliance-Assessment-Tool/
-│
-├── data/
-│   ├── control_catalogue.json
-│   ├── expected_results.json
-│   ├── organization_schema.json
-│   └── scenario_*.json
-│
-├── docs/
-│   └── ARCHITECTURE_DECISIONS.md
-│
-├── images/
-│
-├── src/
-│   ├── ai_summary.py
-│   ├── form_adapter.py
-│   ├── llm_provider.py
-│   ├── models.py
-│   ├── report_generator.py
-│   ├── rule_engine.py
-│   ├── scoring.py
-│   └── validator.py
-│
-├── templates/
-│   └── report_template.html
-│
-├── tests/
-│   ├── test_ai_immutability.py
-│   ├── test_form_adapter.py
-│   ├── test_llm_provider.py
-│   ├── test_report_generator.py
-│   ├── test_rules.py
-│   ├── test_scoring.py
-│   └── test_validation.py
-│
-├── app.py
-├── .env.example
-├── .gitignore
-├── requirements.txt
-└── requirements-lock.txt
-```
 
 ### Main Components
 
